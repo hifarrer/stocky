@@ -1,4 +1,4 @@
-# Stocky - Real-Time Financial Dashboard
+# BlockyFi - Real-Time Financial Dashboard
 
 A modern, real-time financial market dashboard built with Next.js, TypeScript, and Tailwind CSS. Track stocks, cryptocurrencies, market sentiment, and more in a beautiful, customizable interface.
 

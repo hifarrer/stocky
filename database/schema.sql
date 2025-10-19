@@ -1,8 +1,8 @@
--- Stocky Dashboard Database Schema
+-- BlockyFi Dashboard Database Schema
 -- PostgreSQL implementation for production deployment
 
 -- Enable UUID extension
-CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- User management table
 CREATE TABLE users (
@@ -24,22 +24,10 @@ CREATE TABLE user_preferences (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     default_symbol VARCHAR(10) DEFAULT 'AAPL',
     chart_timeframe VARCHAR(5) DEFAULT '1d',
-    theme_preferences JSONB DEFAULT '{
-        \"darkMode\": true,
-        \"primaryColor\": \"#00FF88\",
-        \"accentColor\": \"#FF6B6B\"
-    }',
+    theme_preferences JSONB DEFAULT '{"darkMode": true, "primaryColor": "#00FF88", "accentColor": "#FF6B6B"}',
     watchlist TEXT[] DEFAULT ARRAY['AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA'],
-    notification_settings JSONB DEFAULT '{
-        \"priceAlerts\": true,
-        \"newsAlerts\": false,
-        \"marketOpen\": true,
-        \"emailNotifications\": false
-    }',
-    layout_preferences JSONB DEFAULT '{
-        \"widgetOrder\": [\"chart\", \"snapshot\", \"heatmap\", \"news\", \"calendar\"],
-        \"compactMode\": false
-    }',
+    notification_settings JSONB DEFAULT '{"priceAlerts": true, "newsAlerts": false, "marketOpen": true, "emailNotifications": false}',
+    layout_preferences JSONB DEFAULT '{"widgetOrder": ["chart", "snapshot", "heatmap", "news", "calendar"], "compactMode": false}',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -229,7 +217,7 @@ CREATE TRIGGER update_system_config_updated_at BEFORE UPDATE ON system_config
 -- Cleanup function for expired cache entries
 CREATE OR REPLACE FUNCTION cleanup_expired_cache()
 RETURNS INTEGER AS $$
-DECLATE
+DECLARE
     deleted_count INTEGER;
 BEGIN
     DELETE FROM market_data_cache WHERE expires_at < CURRENT_TIMESTAMP;
@@ -240,7 +228,7 @@ $$ LANGUAGE plpgsql;
 
 -- Default system configuration
 INSERT INTO system_config (key, value, description, is_public) VALUES
-('app_version', '\"1.0.0\"', 'Application version', true),
+('app_version', '"1.0.0"', 'Application version', true),
 ('maintenance_mode', 'false', 'Maintenance mode flag', true),
 ('max_watchlist_items', '50', 'Maximum items per user watchlist', false),
 ('cache_ttl_snapshot', '60', 'Snapshot data cache TTL in seconds', false),
@@ -248,13 +236,7 @@ INSERT INTO system_config (key, value, description, is_public) VALUES
 ('cache_ttl_news', '600', 'News cache TTL in seconds', false),
 ('rate_limit_requests', '100', 'Rate limit requests per window', false),
 ('rate_limit_window_ms', '60000', 'Rate limit window in milliseconds', false),
-('features_enabled', '{
-    \"realTimeData\": true,
-    \"priceAlerts\": true,
-    \"newsIntegration\": true,
-    \"socialFeatures\": false,
-    \"advancedCharting\": true
-}', 'Feature flags', true);
+('features_enabled', '{"realTimeData": true, "priceAlerts": true, "newsIntegration": true, "socialFeatures": false, "advancedCharting": true}', 'Feature flags', true);
 
 -- Comments for documentation
 COMMENT ON TABLE users IS 'User account information and authentication data';

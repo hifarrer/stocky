@@ -46,7 +46,7 @@ export class PolygonBaseClient {
           signal: controller.signal,
           headers: {
             'Accept': 'application/json',
-            'User-Agent': 'Stocky-Dashboard/1.0',
+            'User-Agent': 'BlockyFi-Dashboard/1.0',
           },
         });
 

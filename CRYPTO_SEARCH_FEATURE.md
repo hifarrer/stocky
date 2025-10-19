@@ -1,7 +1,7 @@
 # Crypto Search Feature - Implementation Summary
 
 ## Overview
-Added comprehensive cryptocurrency search functionality to the Stocky dashboard, allowing users to search for and discover crypto assets alongside stocks and forex pairs using CoinGecko's API.
+Added comprehensive cryptocurrency search functionality to the BlockyFi dashboard, allowing users to search for and discover crypto assets alongside stocks and forex pairs using CoinGecko's API.
 
 ## Changes Made
 

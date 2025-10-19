@@ -5,6 +5,7 @@ import { Menu, Settings, Bell, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SearchInput } from '@/components/search';
 import { useSymbol, useUserPreferences, useWebSocket } from '@/contexts';
+import { UserMenu } from '@/components/auth/UserMenu';
 
 interface HeaderProps {
   onMenuToggle?: () => void;
@@ -32,7 +33,7 @@ export function Header({ onMenuToggle, onSettingsOpen }: HeaderProps) {
           
           <div className="flex items-center space-x-2">
             <TrendingUp className="h-6 w-6 text-success" />
-            <span className="text-xl font-bold">Stocky</span>
+            <span className="text-xl font-bold">BlockyFi</span>
           </div>
         </div>
 
@@ -72,6 +73,9 @@ export function Header({ onMenuToggle, onSettingsOpen }: HeaderProps) {
           <Button variant="ghost" size="icon" onClick={onSettingsOpen}>
             <Settings className="h-4 w-4" />
           </Button>
+
+          {/* User Menu */}
+          <UserMenu />
         </div>
       </div>
     </header>

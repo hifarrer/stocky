@@ -10,10 +10,10 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Stocky - Real-time Stock & Crypto Dashboard",
+  title: "BlockyFi - Real-time Stock & Crypto Dashboard",
   description: "Professional financial dashboard for real-time market analysis, stock tracking, and cryptocurrency monitoring.",
   keywords: "stocks, crypto, dashboard, trading, finance, real-time, market data",
-  authors: [{ name: "Stocky Team" }],
+  authors: [{ name: "BlockyFi Team" }],
 };
 
 export const viewport = {
