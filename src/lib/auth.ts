@@ -22,7 +22,7 @@ export interface User {
 export interface JWTPayload {
   userId: string;
   email: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 /**
@@ -157,6 +157,60 @@ export async function createDefaultUserPreferences(userId: string): Promise<void
   await query(
     'INSERT INTO user_preferences (user_id) VALUES ($1) ON CONFLICT DO NOTHING',
     [userId]
+  );
+}
+
+/**
+ * Update user email
+ */
+export async function updateUserEmail(
+  userId: string,
+  newEmail: string
+): Promise<User> {
+  const user = await queryOne<User>(
+    'UPDATE users SET email = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING id, email, username, provider, is_active, created_at, updated_at, last_login_at',
+    [newEmail, userId]
+  );
+
+  if (!user) {
+    throw new Error('Failed to update email');
+  }
+
+  return user;
+}
+
+/**
+ * Update user password
+ */
+export async function updateUserPassword(
+  userId: string,
+  currentPassword: string,
+  newPassword: string
+): Promise<void> {
+  // Get current password hash
+  const result = await queryOne<{ password_hash: string }>(
+    'SELECT password_hash FROM users WHERE id = $1 AND provider = $2',
+    [userId, 'local']
+  );
+
+  if (!result || !result.password_hash) {
+    throw new Error('User not found or not using local authentication');
+  }
+
+  // Verify current password
+  const isValid = await verifyPassword(currentPassword, result.password_hash);
+  
+  if (!isValid) {
+    throw new Error('Current password is incorrect');
+  }
+
+  // Hash new password
+  const newPasswordHash = await hashPassword(newPassword);
+
+  // Update password
+  await query(
+    'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE id = $2',
+    [newPasswordHash, userId]
   );
 }
 

@@ -1,9 +1,9 @@
 import { PolygonBaseClient } from './base';
 import {
-  PolygonTickerSearch,
   TickerDetails,
   TickerSearchParams,
 } from '@/types/polygon';
+import { PolygonTickerSearch } from '@/types';
 
 export class ReferenceClient extends PolygonBaseClient {
   /**
@@ -88,7 +88,7 @@ export class ReferenceClient extends PolygonBaseClient {
       
       return result.results.length > 0 && 
              result.results[0].ticker === validatedTicker;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

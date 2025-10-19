@@ -162,13 +162,13 @@ export function SocialSentiment({ className = '' }: SocialSentimentProps) {
     }
   };
 
-  const generateTopicsFromData = (trendingData: any[]): TrendingTopic[] => {
+  const generateTopicsFromData = (trendingData: Record<string, unknown>[]): TrendingTopic[] => {
     // Analyze ticker sectors and generate trending topics
     const topics: TrendingTopic[] = [];
     
     // Count tech stocks
     const techTickers = trendingData.filter(t => 
-      ['NVDA', 'AMD', 'INTC', 'MSFT', 'GOOGL', 'META', 'AAPL', 'TSLA'].includes(t.ticker)
+      ['NVDA', 'AMD', 'INTC', 'MSFT', 'GOOGL', 'META', 'AAPL', 'TSLA'].includes(t.ticker as string)
     );
     if (techTickers.length > 0) {
       const avgSentiment = techTickers.reduce((sum, t) => 
@@ -176,7 +176,7 @@ export function SocialSentiment({ className = '' }: SocialSentimentProps) {
       ) / techTickers.length;
       topics.push({
         tag: 'AI',
-        mentions: techTickers.reduce((sum, t) => sum + t.mentions, 0),
+        mentions: techTickers.reduce((sum, t) => sum + (t.mentions as number), 0),
         change: Math.floor(Math.random() * 150),
         sentiment: avgSentiment > 0.2 ? 'positive' : avgSentiment < -0.2 ? 'negative' : 'neutral',
       });
@@ -273,7 +273,6 @@ export function SocialSentiment({ className = '' }: SocialSentimentProps) {
       symbol: stock.symbol,
       name: stock.name,
       market: 'stocks',
-      type: 'stock',
     });
   };
 

@@ -89,7 +89,7 @@ function symbolReducer(state: SymbolState, action: SymbolAction): SymbolState {
         ...state,
         searchState: {
           ...state.searchState,
-          error: action.payload,
+          error: action.payload || undefined,
         },
       };
 
@@ -146,7 +146,7 @@ function symbolReducer(state: SymbolState, action: SymbolAction): SymbolState {
           ...state.searchState,
           query: '',
           results: [],
-          error: null,
+          error: undefined,
         },
       };
 
@@ -202,13 +202,7 @@ export function SymbolProvider({ children, apiKey }: SymbolProviderProps) {
               symbol: 'AAPL',
               name: 'Apple Inc.',
               market: 'stocks',
-              type: 'stock',
-              exchange: 'NASDAQ',
               sector: 'Technology',
-              currency: 'USD',
-              country: 'US',
-              isActive: true,
-              lastUpdated: new Date().toISOString(),
             };
             console.log('SymbolContext: Setting default symbol from stored data', defaultSymbol);
             dispatch({ type: 'SET_SELECTED_SYMBOL', payload: defaultSymbol });
@@ -219,13 +213,7 @@ export function SymbolProvider({ children, apiKey }: SymbolProviderProps) {
             symbol: 'AAPL',
             name: 'Apple Inc.',
             market: 'stocks',
-            type: 'stock',
-            exchange: 'NASDAQ',
             sector: 'Technology',
-            currency: 'USD',
-            country: 'US',
-            isActive: true,
-            lastUpdated: new Date().toISOString(),
           };
           console.log('SymbolContext: Setting default symbol (no stored data)', defaultSymbol);
           dispatch({ type: 'SET_SELECTED_SYMBOL', payload: defaultSymbol });
@@ -237,13 +225,7 @@ export function SymbolProvider({ children, apiKey }: SymbolProviderProps) {
           symbol: 'AAPL',
           name: 'Apple Inc.',
           market: 'stocks',
-          type: 'stock',
-          exchange: 'NASDAQ',
           sector: 'Technology',
-          currency: 'USD',
-          country: 'US',
-          isActive: true,
-          lastUpdated: new Date().toISOString(),
         };
         console.log('SymbolContext: Setting default symbol (error case)', defaultSymbol);
         dispatch({ type: 'SET_SELECTED_SYMBOL', payload: defaultSymbol });
@@ -431,11 +413,11 @@ export function SymbolProvider({ children, apiKey }: SymbolProviderProps) {
     try {
       const popular = await polygonClient.reference.getPopularTickers(20);
       
-      return popular.results.map(ticker => ({
-        symbol: ticker.ticker,
+      return popular.results.map((ticker: Record<string, unknown>) => ({
+        symbol: ticker.ticker as string,
         market: ticker.market as MarketType,
-        name: ticker.name,
-        sector: ticker.sic_description,
+        name: ticker.name as string,
+        sector: ticker.sic_description as string,
       }));
     } catch (error) {
       console.error('Error fetching popular symbols:', error);

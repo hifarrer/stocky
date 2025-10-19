@@ -283,7 +283,6 @@ export function EconomicCalendar({ maxEvents = 10, className }: EconomicCalendar
                         </div>
                         
                         <Badge 
-                          size="sm"
                           className={cn("text-xs", getImpactColor(event.impact))}
                         >
                           <span className="flex items-center gap-1">

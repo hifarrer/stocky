@@ -83,15 +83,15 @@ export function MarketHeatmap({
       if (data.results && data.results.length > 0) {
         const formattedData: HeatmapData[] = data.results
           .slice(0, maxItems)
-          .map((item: any) => ({
-            symbol: item.ticker,
-            name: item.name || item.ticker,
-            price: item.value || item.session?.close || 0,
-            change: item.todaysChange || item.session?.change || 0,
-            changePercent: item.todaysChangePerc || item.session?.change_percent || 0,
-            volume: item.min?.v || item.last_trade?.s || 0,
-            marketCap: item.market_cap,
-            sector: item.sector,
+          .map((item: Record<string, unknown>) => ({
+            symbol: item.ticker as string,
+            name: (item.name || item.ticker) as string,
+            price: (item.value || (item.session as Record<string, unknown>)?.close || 0) as number,
+            change: (item.todaysChange || (item.session as Record<string, unknown>)?.change || 0) as number,
+            changePercent: (item.todaysChangePerc || (item.session as Record<string, unknown>)?.change_percent || 0) as number,
+            volume: ((item.min as Record<string, unknown>)?.v || (item.last_trade as Record<string, unknown>)?.s || 0) as number,
+            marketCap: item.market_cap as number,
+            sector: item.sector as string,
           }))
           .filter(item => item.price > 0); // Filter out invalid data
 

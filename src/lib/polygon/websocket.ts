@@ -295,7 +295,7 @@ export class PolygonWebSocketClient {
   /**
    * Process individual message
    */
-  private processMessage(message: any): void {
+  private processMessage(message: WebSocketMessage | { ev: string; status?: string; message?: string }): void {
     // Handle status messages
     if (message.ev === 'status') {
       if (message.status === 'auth_success') {
@@ -332,7 +332,7 @@ export class PolygonWebSocketClient {
   /**
    * Send message to WebSocket
    */
-  private sendMessage(message: any): void {
+  private sendMessage(message: WebSocketAuthMessage | WebSocketSubscribeMessage | WebSocketUnsubscribeMessage | { action: string }): void {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
       this.ws.send(JSON.stringify(message));
     }

@@ -15,8 +15,9 @@ import {
   SocialSentimentWidget,
   NewsWidget,
   EconomicCalendarWidget,
+  PortfolioWidget as PortfolioWidgetWrapper,
 } from '@/components/layout';
-import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar } from '@/components/widgets';
+import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar, PortfolioWidget } from '@/components/widgets';
 import { useDashboard } from '@/contexts';
 
 export default function Home() {
@@ -54,6 +55,11 @@ export default function Home() {
         <TickerSnapshotWidget>
           <TickerSnapshot />
         </TickerSnapshotWidget>
+
+        {/* Portfolio Widget */}
+        <PortfolioWidgetWrapper>
+          <PortfolioWidget />
+        </PortfolioWidgetWrapper>
 
         {/* Market Heatmap Widget */}
         <MarketHeatmapWidget>

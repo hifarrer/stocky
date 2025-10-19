@@ -7,9 +7,10 @@ const polygonClient = createPolygonClient(
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { symbol: string } }
+  { params }: { params: Promise<{ symbol: string }> }
 ) {
-  const symbol = params.symbol.toUpperCase();
+  const { symbol: symbolParam } = await params;
+  const symbol = symbolParam.toUpperCase();
   const { searchParams } = new URL(request.url);
   const extended = searchParams.get('extended') === 'true';
 

@@ -23,7 +23,7 @@ export class PolygonBaseClient {
 
   protected async makeRequest<T>(
     endpoint: string,
-    params: Record<string, any> = {}
+    params: Record<string, unknown> = {}
   ): Promise<T> {
     const url = new URL(`${this.baseUrl}${endpoint}`);
     
@@ -35,7 +35,7 @@ export class PolygonBaseClient {
       }
     });
 
-    let lastError: Error;
+    let lastError: Error = new Error('Unknown error');
     
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       try {
@@ -142,7 +142,7 @@ export class PolygonBaseClient {
     return symbol.toUpperCase().trim();
   }
 
-  protected buildQueryString(params: Record<string, any>): string {
+  protected buildQueryString(params: Record<string, unknown>): string {
     const searchParams = new URLSearchParams();
     
     Object.entries(params).forEach(([key, value]) => {

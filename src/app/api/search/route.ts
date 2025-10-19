@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         // Use Polygon for stocks and forex
         const response = await polygonClient.reference.searchTickers({
           search: query,
-          market,
+          market: market === 'forex' ? 'fx' : market,
           active: true,
           limit,
         });

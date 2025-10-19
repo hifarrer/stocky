@@ -1,13 +1,13 @@
 export class APIError extends Error {
   public readonly statusCode: number;
   public readonly code: string;
-  public readonly details?: any;
+  public readonly details?: Record<string, unknown>;
 
   constructor(
     message: string,
     statusCode: number = 500,
     code: string = 'INTERNAL_ERROR',
-    details?: any
+    details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'APIError';

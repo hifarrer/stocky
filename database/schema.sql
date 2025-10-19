@@ -238,6 +238,46 @@ INSERT INTO system_config (key, value, description, is_public) VALUES
 ('rate_limit_window_ms', '60000', 'Rate limit window in milliseconds', false),
 ('features_enabled', '{"realTimeData": true, "priceAlerts": true, "newsIntegration": true, "socialFeatures": false, "advancedCharting": true}', 'Feature flags', true);
 
+-- Portfolio tables
+CREATE TABLE portfolios (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(100) NOT NULL,
+    description TEXT,
+    is_default BOOLEAN DEFAULT false,
+    color VARCHAR(7), -- Hex color code
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT unique_user_portfolio_name UNIQUE (user_id, name)
+);
+
+CREATE TABLE portfolio_items (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    portfolio_id UUID NOT NULL REFERENCES portfolios(id) ON DELETE CASCADE,
+    symbol VARCHAR(10) NOT NULL,
+    market_type VARCHAR(10) NOT NULL CHECK (market_type IN ('stocks', 'crypto', 'forex')),
+    quantity DECIMAL(15,8) NOT NULL DEFAULT 0,
+    average_price DECIMAL(12,4),
+    notes TEXT,
+    added_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT unique_portfolio_symbol UNIQUE (portfolio_id, symbol)
+);
+
+-- Indexes for portfolio tables
+CREATE INDEX idx_portfolios_user ON portfolios(user_id, is_default);
+CREATE INDEX idx_portfolio_items_portfolio ON portfolio_items(portfolio_id);
+CREATE INDEX idx_portfolio_items_symbol ON portfolio_items(symbol);
+
+-- Triggers for portfolio timestamp updates
+CREATE TRIGGER update_portfolios_updated_at BEFORE UPDATE ON portfolios
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_portfolio_items_updated_at BEFORE UPDATE ON portfolio_items
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 -- Comments for documentation
 COMMENT ON TABLE users IS 'User account information and authentication data';
 COMMENT ON TABLE user_preferences IS 'User-specific application preferences and settings';
@@ -248,4 +288,6 @@ COMMENT ON TABLE price_alerts IS 'User-defined price alerts and notifications';
 COMMENT ON TABLE api_usage IS 'API usage tracking for rate limiting and analytics';
 COMMENT ON TABLE watchlist_groups IS 'User-defined groups for organizing watchlist items';
 COMMENT ON TABLE watchlist_items IS 'Individual symbols in user watchlists';
+COMMENT ON TABLE portfolios IS 'User portfolio containers for organizing investments';
+COMMENT ON TABLE portfolio_items IS 'Individual holdings within user portfolios';
 COMMENT ON TABLE system_config IS 'System-wide configuration and feature flags';

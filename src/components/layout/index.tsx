@@ -14,4 +14,5 @@ export {
   SocialSentimentWidget,
   NewsWidget,
   EconomicCalendarWidget,
+  PortfolioWidget,
 } from './DashboardGrid';

@@ -5,6 +5,7 @@ import { SymbolProvider, useSymbol } from './SymbolContext';
 import { WebSocketProvider, useWebSocket } from './WebSocketContext';
 import { UserPreferencesProvider, useUserPreferences } from './UserPreferencesContext';
 import { AuthProvider, useAuth } from './AuthContext';
+import { TickerSymbol, MarketType } from '../types';
 
 // Export individual contexts
 export { SymbolProvider, useSymbol } from './SymbolContext';
@@ -96,8 +97,13 @@ export function useDashboard() {
     watchlist: preferences.watchlist,
     
     // Actions
-    selectSymbol: (newSymbol: any) => {
-      symbol.selectSymbol(newSymbol);
+    selectSymbol: (newSymbol: { symbol: string; name?: string; market?: string }) => {
+      const tickerSymbol: TickerSymbol = {
+        symbol: newSymbol.symbol,
+        name: newSymbol.name,
+        market: (newSymbol.market as MarketType) || 'stocks',
+      };
+      symbol.selectSymbol(tickerSymbol);
       preferences.setDefaultSymbol(newSymbol.symbol);
     },
     

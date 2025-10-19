@@ -264,7 +264,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
               {getMarketStatusText(snapshotData.marketStatus)}
             </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">{selectedSymbol.name}</p>
+          <p className="text-sm text-muted-foreground">{selectedSymbol?.name}</p>
         </div>
         
         <Button

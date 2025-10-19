@@ -2,8 +2,8 @@ import { PolygonBaseClient } from './base';
 import {
   SnapshotAllTickers,
   SnapshotGainersLosers,
-  SnapshotData,
 } from '@/types/polygon';
+import { SnapshotData } from '@/types';
 
 export class SnapshotClient extends PolygonBaseClient {
   /**
@@ -193,7 +193,7 @@ export class SnapshotClient extends PolygonBaseClient {
         status: snapshot.results.market_status,
         lastUpdated: new Date(snapshot.results.updated),
       };
-    } catch (error) {
+    } catch {
       // Fallback to basic time-based check
       const now = new Date();
       const hour = now.getHours();

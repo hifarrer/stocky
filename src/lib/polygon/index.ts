@@ -1,4 +1,5 @@
 import { PolygonClientConfig } from '@/types/polygon';
+import { SnapshotData } from '@/types';
 import { ReferenceClient } from './reference';
 import { SnapshotClient } from './snapshot';
 import { HistoricalClient } from './historical';
@@ -50,11 +51,11 @@ export class PolygonClient {
    * Get comprehensive market overview
    */
   async getMarketOverview(): Promise<{
-    gainers: any[];
-    losers: any[];
-    mostActive: any[];
-    indices: any[];
-    cryptos: any[];
+    gainers: Record<string, unknown>[];
+    losers: Record<string, unknown>[];
+    mostActive: Record<string, unknown>[];
+    indices: Record<string, unknown>[];
+    cryptos: Record<string, unknown>[];
   }> {
     try {
       const [movers, cryptoSnapshots] = await Promise.allSettled([
@@ -73,7 +74,7 @@ export class PolygonClient {
       );
 
       const indices = indicesData
-        .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+        .filter((result): result is PromiseFulfilledResult<{ results: SnapshotData }> => result.status === 'fulfilled')
         .map(result => result.value.results);
 
       // Most active would need volume data - using gainers as proxy
@@ -83,7 +84,7 @@ export class PolygonClient {
         gainers,
         losers,
         mostActive,
-        indices,
+        indices: indices as unknown as Record<string, unknown>[],
         cryptos,
       };
     } catch (error) {
@@ -102,10 +103,10 @@ export class PolygonClient {
    * Get complete ticker data (snapshot + details + news)
    */
   async getCompleteTickerData(ticker: string): Promise<{
-    snapshot: any;
-    details: any;
-    news: any[];
-    historical: any;
+    snapshot: Record<string, unknown>;
+    details: Record<string, unknown>;
+    news: Record<string, unknown>[];
+    historical: Record<string, unknown>;
   }> {
     const validatedTicker = ticker.toUpperCase().trim();
 
@@ -118,10 +119,10 @@ export class PolygonClient {
       ]);
 
       return {
-        snapshot: snapshot.status === 'fulfilled' ? snapshot.value.results : null,
-        details: details.status === 'fulfilled' ? details.value.results : null,
-        news: news.status === 'fulfilled' ? news.value : [],
-        historical: historical.status === 'fulfilled' ? historical.value : null,
+        snapshot: snapshot.status === 'fulfilled' ? snapshot.value.results as unknown as Record<string, unknown> : {},
+        details: details.status === 'fulfilled' ? details.value.results as unknown as Record<string, unknown> : {},
+        news: news.status === 'fulfilled' ? news.value as unknown as Record<string, unknown>[] : [],
+        historical: historical.status === 'fulfilled' ? historical.value as unknown as Record<string, unknown> : {},
       };
     } catch (error) {
       console.error(`Error fetching complete data for ${validatedTicker}:`, error);
@@ -133,9 +134,9 @@ export class PolygonClient {
    * Search for tickers with enhanced results
    */
   async searchTickersEnhanced(query: string, limit: number = 20): Promise<{
-    stocks: any[];
-    cryptos: any[];
-    forex: any[];
+    stocks: Record<string, unknown>[];
+    cryptos: Record<string, unknown>[];
+    forex: Record<string, unknown>[];
   }> {
     try {
       const [stocks, cryptos, forex] = await Promise.allSettled([

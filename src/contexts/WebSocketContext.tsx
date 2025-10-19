@@ -1,7 +1,8 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useReducer, ReactNode, useCallback } from 'react';
-import { WebSocketMessage, WebSocketState } from '@/types';
+import { WebSocketState } from '@/types';
+import { WebSocketMessage } from '@/types/polygon';
 import { PolygonWebSocketClient, WebSocketEventHandlers } from '@/lib/polygon/websocket';
 
 interface WebSocketContextState extends WebSocketState {
@@ -32,7 +33,7 @@ const initialState: WebSocketContextState = {
   subscribedSymbols: new Set(),
   lastMessage: undefined,
   connectionRetries: 0,
-  error: null,
+  error: undefined,
   latestPrices: {},
   priceHistory: {},
   connectionAttempts: 0,
@@ -45,7 +46,7 @@ function webSocketReducer(state: WebSocketContextState, action: WebSocketAction)
       return {
         ...state,
         isConnected: action.payload,
-        error: action.payload ? null : state.error,
+        error: action.payload ? undefined : state.error,
       };
 
     case 'SET_CLIENT':
@@ -85,7 +86,7 @@ function webSocketReducer(state: WebSocketContextState, action: WebSocketAction)
     case 'SET_ERROR':
       return {
         ...state,
-        error: action.payload,
+        error: action.payload || undefined,
       };
 
     case 'INCREMENT_RETRIES':
@@ -186,11 +187,11 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
         dispatch({ type: 'SET_LAST_MESSAGE', payload: message });
         
         // Update price data based on message type
-        if (message.ev === 'T' || message.ev === 'A' || message.ev === 'AM') {
+        if ((message.ev === 'T' || message.ev === 'A' || message.ev === 'AM') && message.sym) {
           // Trade or aggregate message
-          const price = message.c || message.p || 0;
+          const price = 'p' in message ? message.p : ('c' in message ? message.c : 0);
           const symbol = message.sym;
-          const timestamp = message.t || Date.now();
+          const timestamp = 't' in message ? message.t : Date.now();
 
           if (price && symbol) {
             dispatch({ 

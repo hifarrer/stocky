@@ -9,3 +9,4 @@ export { TechnicalIndicators } from './TechnicalIndicators';
 export { SectorPerformance } from './SectorPerformance';
 export { MarketSentiment } from './MarketSentiment';
 export { SocialSentiment } from './SocialSentiment';
+export { PortfolioWidget } from './PortfolioWidget';

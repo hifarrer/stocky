@@ -50,7 +50,7 @@ export class HistoricalClient extends PolygonBaseClient {
     return this.getAggregates({
       ticker,
       multiplier,
-      timespan,
+      timespan: timespan as 'minute' | 'hour' | 'day' | 'week' | 'month' | 'quarter' | 'year',
       from: this.formatDate(from),
       to: this.formatDate(to),
       adjusted,

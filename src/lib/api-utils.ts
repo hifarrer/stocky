@@ -5,7 +5,7 @@ interface ErrorResponse {
   success: false;
   error: string;
   code: string;
-  details?: any;
+  details?: Record<string, unknown>;
   timestamp: string;
   requestId?: string;
 }
@@ -120,7 +120,7 @@ export function handleAPIError(error: unknown): NextResponse<ErrorResponse> {
 }
 
 export function validateRequiredParams(
-  params: Record<string, any>,
+  params: Record<string, unknown>,
   required: string[]
 ): void {
   for (const param of required) {

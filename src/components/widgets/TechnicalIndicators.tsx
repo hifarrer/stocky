@@ -130,7 +130,7 @@ export function TechnicalIndicators({ className = '' }: TechnicalIndicatorsProps
       );
 
       if (response.results && response.results.length > 0) {
-        const prices = response.results.map((item: any) => item.c);
+        const prices = response.results.map((item: Record<string, unknown>) => item.c as number);
         const currentPrice = prices[prices.length - 1];
 
         const rsi = calculateRSI(prices);
@@ -190,7 +190,7 @@ export function TechnicalIndicators({ className = '' }: TechnicalIndicatorsProps
     return () => clearInterval(interval);
   }, [selectedSymbol]);
 
-  const getRSISignal = (rsi: number): { label: string; color: string; icon: any } => {
+  const getRSISignal = (rsi: number): { label: string; color: string; icon: React.ComponentType<{ className?: string }> } => {
     if (rsi > 70) return { label: 'Overbought', color: 'text-red-600', icon: TrendingDown };
     if (rsi < 30) return { label: 'Oversold', color: 'text-green-600', icon: TrendingUp };
     return { label: 'Neutral', color: 'text-muted-foreground', icon: Minus };

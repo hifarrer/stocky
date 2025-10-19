@@ -62,13 +62,13 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
       if (gainersResponse.results && gainersResponse.results.length > 0) {
         const formattedGainers: MoverData[] = gainersResponse.results
           .slice(0, maxItems)
-          .map((item: any) => ({
-            symbol: item.ticker,
-            name: item.name || item.ticker,
-            price: item.value || item.session?.close || 0,
-            change: item.todaysChange || item.session?.change || 0,
-            changePercent: item.todaysChangePerc || item.session?.change_percent || 0,
-            volume: item.min?.v || item.session?.volume || 0,
+          .map((item: Record<string, unknown>) => ({
+            symbol: item.ticker as string,
+            name: (item.name || item.ticker) as string,
+            price: (item.value || (item.session as Record<string, unknown>)?.close || 0) as number,
+            change: (item.todaysChange || (item.session as Record<string, unknown>)?.change || 0) as number,
+            changePercent: (item.todaysChangePerc || (item.session as Record<string, unknown>)?.change_percent || 0) as number,
+            volume: ((item.min as Record<string, unknown>)?.v || (item.session as Record<string, unknown>)?.volume || 0) as number,
           }));
         setGainers(formattedGainers);
       } else {
@@ -80,13 +80,13 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
       if (losersResponse.results && losersResponse.results.length > 0) {
         const formattedLosers: MoverData[] = losersResponse.results
           .slice(0, maxItems)
-          .map((item: any) => ({
-            symbol: item.ticker,
-            name: item.name || item.ticker,
-            price: item.value || item.session?.close || 0,
-            change: item.todaysChange || item.session?.change || 0,
-            changePercent: item.todaysChangePerc || item.session?.change_percent || 0,
-            volume: item.min?.v || item.session?.volume || 0,
+          .map((item: Record<string, unknown>) => ({
+            symbol: item.ticker as string,
+            name: (item.name || item.ticker) as string,
+            price: (item.value || (item.session as Record<string, unknown>)?.close || 0) as number,
+            change: (item.todaysChange || (item.session as Record<string, unknown>)?.change || 0) as number,
+            changePercent: (item.todaysChangePerc || (item.session as Record<string, unknown>)?.change_percent || 0) as number,
+            volume: ((item.min as Record<string, unknown>)?.v || (item.session as Record<string, unknown>)?.volume || 0) as number,
           }));
         setLosers(formattedLosers);
       } else {
@@ -98,13 +98,13 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
       const allStocks = [...(gainersResponse.results || []), ...(losersResponse.results || [])];
       if (allStocks.length > 0) {
         const formattedActive: MoverData[] = allStocks
-          .map((item: any) => ({
-            symbol: item.ticker,
-            name: item.name || item.ticker,
-            price: item.value || item.session?.close || 0,
-            change: item.todaysChange || item.session?.change || 0,
-            changePercent: item.todaysChangePerc || item.session?.change_percent || 0,
-            volume: item.min?.v || item.session?.volume || 0,
+          .map((item: Record<string, unknown>) => ({
+            symbol: item.ticker as string,
+            name: (item.name || item.ticker) as string,
+            price: (item.value || (item.session as Record<string, unknown>)?.close || 0) as number,
+            change: (item.todaysChange || (item.session as Record<string, unknown>)?.change || 0) as number,
+            changePercent: (item.todaysChangePerc || (item.session as Record<string, unknown>)?.change_percent || 0) as number,
+            volume: ((item.min as Record<string, unknown>)?.v || (item.session as Record<string, unknown>)?.volume || 0) as number,
           }))
           .sort((a, b) => b.volume - a.volume)
           .slice(0, maxItems);
@@ -168,7 +168,6 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
       symbol: item.symbol,
       name: item.name,
       market: 'stocks',
-      type: 'stock',
     });
   };
 

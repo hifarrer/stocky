@@ -62,15 +62,15 @@ export function CryptoHeatmap({
       console.log('CryptoHeatmap: Data received:', data.length, 'coins');
 
       if (data && data.length > 0) {
-        const formattedData: CryptoHeatmapData[] = data.map((coin: any) => ({
-          symbol: coin.symbol.toUpperCase(),
-          name: coin.name,
-          price: coin.current_price,
-          change: coin.price_change_24h,
-          changePercent: coin.price_change_percentage_24h,
-          volume: coin.total_volume,
-          marketCap: coin.market_cap,
-          rank: coin.market_cap_rank,
+        const formattedData: CryptoHeatmapData[] = data.map((coin: Record<string, unknown>) => ({
+          symbol: (coin.symbol as string).toUpperCase(),
+          name: coin.name as string,
+          price: coin.current_price as number,
+          change: coin.price_change_24h as number,
+          changePercent: coin.price_change_percentage_24h as number,
+          volume: coin.total_volume as number,
+          marketCap: coin.market_cap as number,
+          rank: coin.market_cap_rank as number,
         }));
 
         console.log('CryptoHeatmap: Formatted data:', formattedData.length, 'items');

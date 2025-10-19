@@ -131,7 +131,7 @@ export function useMemoryUsage(): {
   useEffect(() => {
     const updateMemory = () => {
       if ('memory' in performance) {
-        const memInfo = (performance as any).memory;
+        const memInfo = (performance as Record<string, unknown>).memory as Record<string, number>;
         setMemory({
           usedJSHeapSize: memInfo.usedJSHeapSize,
           totalJSHeapSize: memInfo.totalJSHeapSize,
@@ -151,7 +151,7 @@ export function useMemoryUsage(): {
 
 // Previous value hook for change detection
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
 
   useEffect(() => {
     ref.current = value;
@@ -163,7 +163,7 @@ export function usePrevious<T>(value: T): T | undefined {
 // Async data fetching hook with caching
 export function useAsyncData<T>(
   fetcher: () => Promise<T>,
-  dependencies: any[] = [],
+  dependencies: unknown[] = [],
   options: {
     cacheKey?: string;
     cacheTime?: number;
@@ -225,7 +225,7 @@ interface CacheEntry<T> {
   ttl: number;
 }
 
-const cache = new Map<string, CacheEntry<any>>();
+const cache = new Map<string, CacheEntry<unknown>>();
 
 export function getCachedData<T>(key: string): T | null {
   const entry = cache.get(key);
@@ -237,7 +237,7 @@ export function getCachedData<T>(key: string): T | null {
     return null;
   }
 
-  return entry.data;
+  return entry.data as T;
 }
 
 export function setCachedData<T>(key: string, data: T, ttl: number): void {
@@ -277,10 +277,6 @@ export function measurePerformance(name: string, fn: () => void | Promise<void>)
 // Bundle size analyzer (development only)
 export function analyzeBundleSize(): void {
   if (process.env.NODE_ENV === 'development') {
-    import('webpack-bundle-analyzer').then(({ BundleAnalyzerPlugin }) => {
-      console.log('Bundle analyzer would run in real webpack setup');
-    }).catch(() => {
-      console.log('Bundle analyzer not available');
-    });
+    console.log('Bundle analyzer would run in real webpack setup');
   }
 }

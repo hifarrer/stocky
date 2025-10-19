@@ -22,41 +22,44 @@ const defaultLayouts = {
   lg: [
     { i: 'price-chart', x: 0, y: 0, w: 2, h: 10, minW: 2, minH: 8 },
     { i: 'ticker-snapshot', x: 2, y: 0, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-heatmap', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'crypto-heatmap', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'top-movers', x: 2, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'technical-indicators', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'sector-performance', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-sentiment', x: 2, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'social-sentiment', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'news-widget', x: 1, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'economic-calendar', x: 2, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'portfolio-widget', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-heatmap', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-heatmap', x: 2, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'top-movers', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'technical-indicators', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'sector-performance', x: 2, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-sentiment', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'social-sentiment', x: 1, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'news-widget', x: 2, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'economic-calendar', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
   ],
   md: [
     { i: 'price-chart', x: 0, y: 0, w: 2, h: 10, minW: 2, minH: 8 },
     { i: 'ticker-snapshot', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-heatmap', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'crypto-heatmap', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'top-movers', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'technical-indicators', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'sector-performance', x: 1, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-sentiment', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'social-sentiment', x: 1, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'news-widget', x: 0, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'economic-calendar', x: 1, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'portfolio-widget', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-heatmap', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-heatmap', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'top-movers', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'technical-indicators', x: 1, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'sector-performance', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-sentiment', x: 1, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'social-sentiment', x: 0, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'news-widget', x: 1, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'economic-calendar', x: 0, y: 60, w: 1, h: 10, minW: 1, minH: 8 },
   ],
   sm: [
     { i: 'price-chart', x: 0, y: 0, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'ticker-snapshot', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-heatmap', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'crypto-heatmap', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'top-movers', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'technical-indicators', x: 0, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'sector-performance', x: 0, y: 60, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-sentiment', x: 0, y: 70, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'social-sentiment', x: 0, y: 80, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'news-widget', x: 0, y: 90, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'economic-calendar', x: 0, y: 100, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'portfolio-widget', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-heatmap', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-heatmap', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'top-movers', x: 0, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'technical-indicators', x: 0, y: 60, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'sector-performance', x: 0, y: 70, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-sentiment', x: 0, y: 80, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'social-sentiment', x: 0, y: 90, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'news-widget', x: 0, y: 100, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'economic-calendar', x: 0, y: 110, w: 1, h: 10, minW: 1, minH: 8 },
   ],
 };
 
@@ -86,10 +89,10 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
   }, []);
 
   // Save layout to localStorage when it changes
-  const handleLayoutChange = (layout: Layout[], allLayouts: any) => {
+  const handleLayoutChange = (layout: Layout[], allLayouts: Record<string, Layout[]>) => {
     try {
       localStorage.setItem('dashboard-layout', JSON.stringify(allLayouts));
-      setLayouts(allLayouts);
+      setLayouts(allLayouts as typeof layouts);
     } catch (error) {
       console.error('Error saving dashboard layout:', error);
     }
@@ -118,6 +121,7 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
   const widgetKeys = [
     'price-chart',
     'ticker-snapshot',
+    'portfolio-widget',
     'market-heatmap',
     'crypto-heatmap',
     'top-movers',
@@ -277,6 +281,14 @@ export function MarketSentimentWidget({ children }: { children: React.ReactNode 
 export function SocialSentimentWidget({ children }: { children: React.ReactNode }) {
   return (
     <Widget title="Social Sentiment">
+      {children}
+    </Widget>
+  );
+}
+
+export function PortfolioWidget({ children }: { children: React.ReactNode }) {
+  return (
+    <Widget title="Portfolio">
       {children}
     </Widget>
   );

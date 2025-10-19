@@ -156,7 +156,7 @@ export interface MarketStatus {
 // WebSocket Types
 export interface WebSocketMessage {
   ev: string; // event type
-  sym: string; // symbol
+  sym?: string; // symbol (optional for status messages)
   c?: number; // close/current price
   h?: number; // high
   l?: number; // low
@@ -243,7 +243,7 @@ export interface ChartState {
 export interface WebSocketState {
   isConnected: boolean;
   subscribedSymbols: Set<string>;
-  lastMessage?: WebSocketMessage;
+  lastMessage?: import('./polygon').WebSocketMessage;
   connectionRetries: number;
   error?: string;
 }
@@ -283,7 +283,7 @@ export interface APIError {
   message: string;
   code: number;
   type: 'RATE_LIMIT' | 'INVALID_SYMBOL' | 'NETWORK_ERROR' | 'UNAUTHORIZED' | 'UNKNOWN';
-  details?: any;
+  details?: Record<string, unknown>;
 }
 
 export interface ValidationError {
