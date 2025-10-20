@@ -6,9 +6,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts';
 
 export default function AuthPage() {
   const router = useRouter();
+  const { login, register } = useAuth();
   const [activeTab, setActiveTab] = useState<'login' | 'register'>('login');
   
   // Login form state
@@ -31,33 +33,12 @@ export default function AuthPage() {
     setLoginLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: loginEmail,
-          password: loginPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setLoginError(data.error || 'Login failed');
-        return;
-      }
-
-      // Store token in localStorage
-      localStorage.setItem('auth_token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
+      await login(loginEmail, loginPassword);
       // Redirect to dashboard
       router.push('/');
     } catch (error) {
       console.error('Login error:', error);
-      setLoginError('An unexpected error occurred');
+      setLoginError(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setLoginLoading(false);
     }
@@ -82,44 +63,26 @@ export default function AuthPage() {
     setRegisterLoading(true);
 
     try {
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: registerEmail,
-          username: registerUsername || undefined,
-          password: registerPassword,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setRegisterError(data.error || 'Registration failed');
-        return;
-      }
-
-      // Store token in localStorage
-      localStorage.setItem('auth_token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
-
+      await register(registerEmail, registerPassword, registerUsername || undefined);
       // Redirect to dashboard
       router.push('/');
     } catch (error) {
       console.error('Registration error:', error);
-      setRegisterError('An unexpected error occurred');
+      setRegisterError(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setRegisterLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-black p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">BlockyFi</h1>
+          <img 
+            src="https://res.cloudinary.com/dqemas8ht/image/upload/v1760925562/Blockyfi_white_fmiz3i.png" 
+            alt="BlockyFi" 
+            className="mx-auto mb-4 h-16 w-auto"
+          />
           <p className="text-slate-400">Real-time market insights and analytics</p>
         </div>
 
