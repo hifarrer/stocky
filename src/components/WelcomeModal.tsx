@@ -54,7 +54,7 @@ export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
         {/* Logo */}
         <div className="flex justify-center mb-6">
           <img 
-            src="https://res.cloudinary.com/dqemas8ht/image/upload/v1760924789/Blockyfi_rhuczn.png" 
+            src="https://res.cloudinary.com/dqemas8ht/image/upload/v1760925562/Blockyfi_white_fmiz3i.png" 
             alt="Blockyfi Logo" 
             className="h-16 w-auto"
           />
