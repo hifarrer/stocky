@@ -74,8 +74,8 @@ export class PolygonClient {
       );
 
       const indices = indicesData
-        .filter((result): result is PromiseFulfilledResult<{ results: SnapshotData }> => result.status === 'fulfilled')
-        .map(result => result.value.results);
+        .filter((result): result is PromiseFulfilledResult<{ ticker: SnapshotData }> => result.status === 'fulfilled')
+        .map(result => result.value.ticker);
 
       // Most active would need volume data - using gainers as proxy
       const mostActive = gainers.slice(0, 10);
