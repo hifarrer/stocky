@@ -42,6 +42,14 @@ export interface SnapshotData {
   updated: number;
   timeframe: string;
   value: number;
+  day?: {
+    o: number;
+    h: number;
+    l: number;
+    c: number;
+    v: number;
+    vw: number;
+  };
   min?: {
     av: number;
     c: number;
