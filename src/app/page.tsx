@@ -19,11 +19,14 @@ import {
 } from '@/components/layout';
 import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar, CryptoPortfolioWidget, StockPortfolioWidget } from '@/components/widgets';
 import { useDashboard } from '@/contexts';
+import WelcomeModal from '@/components/WelcomeModal';
+import { useWelcomeModal } from '@/hooks/useWelcomeModal';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const dashboard = useDashboard();
+  const { showModal, closeModal } = useWelcomeModal();
 
   // Debug: Log widget rendering
   console.log('Dashboard state:', {
@@ -132,6 +135,9 @@ export default function Home() {
           </button>
         </div>
       )}
+
+      {/* Welcome Modal */}
+      <WelcomeModal isOpen={showModal} onClose={closeModal} />
     </div>
   );
 }
