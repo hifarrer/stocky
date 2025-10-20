@@ -213,7 +213,7 @@ export function useAsyncData<T>(
 
   useEffect(() => {
     fetchData();
-  }, [fetchData, ...dependencies]);
+  }, [fetchData, ...dependencies]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return { data, loading, error, refetch: fetchData };
 }

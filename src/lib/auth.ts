@@ -146,6 +146,7 @@ export async function verifyCredentials(
   );
 
   // Return user without password_hash
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password_hash, ...user } = result;
   return user;
 }

@@ -1,0 +1,17 @@
+{
+  "name": "BlockyFi - Financial Dashboard",
+  "short_name": "BlockyFi",
+  "description": "Professional financial dashboard for real-time market analysis, stock tracking, and cryptocurrency monitoring.",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#0f172a",
+  "background_color": "#0f172a",
+  "display": "standalone",
+  "start_url": "/",
+  "scope": "/"
+}

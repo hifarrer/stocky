@@ -20,11 +20,18 @@ describe('WelcomeModal', () => {
   beforeEach(() => {
     mockUseRouter.mockReturnValue({
       push: mockPush,
-    } as any);
+    } as ReturnType<typeof useRouter>);
     
     mockUseAuth.mockReturnValue({
+      user: null,
+      token: null,
       isAuthenticated: false,
-    } as any);
+      isLoading: false,
+      login: jest.fn(),
+      register: jest.fn(),
+      logout: jest.fn(),
+      refreshUser: jest.fn(),
+    } as ReturnType<typeof useAuth>);
   });
 
   afterEach(() => {
