@@ -75,7 +75,7 @@ export function SocialSentiment({ className = '' }: SocialSentimentProps) {
                 } catch (detailsErr) {
                   // Fallback to snapshot
                   const snapshot = await polygonClient.snapshot.getTicker(item.ticker);
-                  companyName = snapshot?.results?.name || '';
+                  companyName = snapshot?.ticker?.name || '';
                 }
                 
                 // Calculate sentiment score (-100 to 100)
