@@ -50,6 +50,13 @@ export async function POST(request: NextRequest) {
       [payload.userId, 'Stock Portfolio', 'Default portfolio for tracking stock investments', false]
     );
 
+    if (!cryptoPortfolio || !stockPortfolio) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Failed to create default portfolios' 
+      }, { status: 500 });
+    }
+
     // Add default symbols to both portfolios
     try {
       // Add BTC to crypto portfolio

@@ -42,7 +42,6 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <Header 
         onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        onSettingsOpen={() => setIsSettingsOpen(true)}
       />
       
       <DashboardLayout>

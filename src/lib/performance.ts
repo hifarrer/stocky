@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 
 // Debounce hook for search inputs and API calls
 export function useDebounce<T>(value: T, delay: number): T {
@@ -180,7 +180,7 @@ export function useAsyncData<T>(
   const [error, setError] = useState<Error | null>(null);
   const { cacheKey, cacheTime = 5 * 60 * 1000, onError } = options;
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -209,11 +209,11 @@ export function useAsyncData<T>(
     } finally {
       setLoading(false);
     }
-  };
+  }, [cacheKey, cacheTime, fetcher, onError]);
 
   useEffect(() => {
     fetchData();
-  }, dependencies);
+  }, [fetchData, ...dependencies]);
 
   return { data, loading, error, refetch: fetchData };
 }

@@ -107,13 +107,14 @@ async function initializeDatabase(): Promise<void> {
         if (statement.trim()) {
           try {
             await client.query(statement);
-          } catch (error: any) {
+          } catch (error: unknown) {
             // Skip errors for statements that might already exist
-            if (!error.message.includes('already exists') && 
-                !error.message.includes('duplicate key') &&
-                !error.message.includes('relation') ||
-                !error.message.includes('already exists')) {
-              console.warn('⚠️ Statement warning:', error.message);
+            if (error instanceof Error) {
+              if (!error.message.includes('already exists') && 
+                  !error.message.includes('duplicate key') &&
+                  !error.message.includes('relation')) {
+                console.warn('⚠️ Statement warning:', error.message);
+              }
             }
           }
         }
@@ -142,7 +143,7 @@ async function initializeDatabase(): Promise<void> {
 /**
  * Execute embedded schema as fallback when schema file is not found
  */
-async function executeEmbeddedSchema(client: any): Promise<void> {
+async function executeEmbeddedSchema(client: { query: (text: string) => Promise<{ rows: unknown[] }> }): Promise<void> {
   // Essential tables only - minimal schema for core functionality
   const essentialSchema = `
     -- Enable UUID extension
@@ -322,11 +323,11 @@ export async function checkDatabaseStatus(): Promise<{
       await pool.end();
     }
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     return {
       initialized: false,
       tables: [],
-      error: error.message
+      error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
 }

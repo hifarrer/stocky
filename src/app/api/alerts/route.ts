@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid token' }, { status: 401 });
     }
 
-    const { triggered } = request.nextUrl.searchParams;
+    const triggered = request.nextUrl.searchParams.get('triggered');
     const showTriggered = triggered === 'true';
 
     let queryStr = `

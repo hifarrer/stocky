@@ -45,9 +45,9 @@ export async function query<T = Record<string, unknown>>(
   try {
     const result = await pool.query(text, params);
     return result.rows;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If the error is about missing tables, try to initialize the database
-    if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
+    if (error instanceof Error && error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
       console.log('🔧 Database tables missing, initializing...');
       try {
         await initializeDatabaseDirectly();
@@ -76,9 +76,9 @@ export async function queryOne<T = Record<string, unknown>>(
   try {
     const result = await pool.query(text, params);
     return result.rows[0] || null;
-  } catch (error: any) {
+  } catch (error: unknown) {
     // If the error is about missing tables, try to initialize the database
-    if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
+    if (error instanceof Error && error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
       console.log('🔧 Database tables missing, initializing...');
       try {
         await initializeDatabaseDirectly();
