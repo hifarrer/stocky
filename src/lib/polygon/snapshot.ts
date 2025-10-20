@@ -191,7 +191,7 @@ export class SnapshotClient extends PolygonBaseClient {
       return {
         isOpen: snapshot.ticker.market_status === 'open',
         status: snapshot.ticker.market_status,
-        lastUpdated: new Date(snapshot.ticker.updated),
+        lastUpdated: new Date(snapshot.ticker.updated / 1000000),
       };
     } catch {
       // Fallback to basic time-based check

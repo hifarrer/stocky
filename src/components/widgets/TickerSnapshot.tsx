@@ -63,7 +63,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
           low: data.min?.l || data.value || 0,
           open: data.min?.o || data.value || 0,
           previousClose: data.prevDay?.c || 0,
-          lastUpdated: new Date(data.updated || Date.now()),
+          lastUpdated: new Date((data.updated || Date.now()) / 1000000),
           marketStatus: data.market_status || 'closed',
         });
       } else {
