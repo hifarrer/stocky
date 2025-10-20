@@ -119,7 +119,7 @@ export class PolygonClient {
       ]);
 
       return {
-        snapshot: snapshot.status === 'fulfilled' ? snapshot.value.results as unknown as Record<string, unknown> : {},
+        snapshot: snapshot.status === 'fulfilled' ? snapshot.value.ticker as unknown as Record<string, unknown> : {},
         details: details.status === 'fulfilled' ? details.value.results as unknown as Record<string, unknown> : {},
         news: news.status === 'fulfilled' ? news.value as unknown as Record<string, unknown>[] : [],
         historical: historical.status === 'fulfilled' ? historical.value as unknown as Record<string, unknown> : {},
