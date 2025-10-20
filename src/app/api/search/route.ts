@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
   const limit = parseInt(searchParams.get('limit') || '20');
   const market = searchParams.get('market') as 'stocks' | 'crypto' | 'forex' | null;
 
+  console.log('Search API called with:', { query, limit, market });
+
   if (!query) {
     return NextResponse.json(
       { error: 'Query parameter is required' },
@@ -33,21 +35,31 @@ export async function GET(request: NextRequest) {
         // Use CoinGecko for crypto search
         try {
           const cgResults = await coinGeckoClient.search(query);
-          results = { 
-            crypto: cgResults.coins.slice(0, limit).map(coin => ({
-              ticker: coin.symbol.toUpperCase(),
-              name: coin.name,
-              market: 'crypto',
-              locale: 'global',
-              primary_exchange: 'crypto',
-              type: 'cryptocurrency',
-              active: true,
-              currency_name: coin.name,
-              last_updated_utc: new Date().toISOString(),
-              market_cap_rank: coin.market_cap_rank,
-              coin_id: coin.id,
-            }))
-          };
+          const cryptoResults = cgResults.coins.slice(0, limit).map(coin => ({
+            ticker: coin.symbol.toUpperCase(),
+            name: coin.name,
+            market: 'crypto',
+            locale: 'global',
+            primary_exchange: 'crypto',
+            type: 'cryptocurrency',
+            active: true,
+            currency_name: coin.name,
+            last_updated_utc: new Date().toISOString(),
+            market_cap_rank: coin.market_cap_rank,
+            coin_id: coin.id,
+          }));
+          
+          // Sort crypto results to prioritize exact matches
+          const upperQuery = query.toUpperCase();
+          const sortedCryptoResults = cryptoResults.sort((a, b) => {
+            const aExact = a.ticker === upperQuery;
+            const bExact = b.ticker === upperQuery;
+            if (aExact && !bExact) return -1;
+            if (!aExact && bExact) return 1;
+            return 0;
+          });
+          
+          results = { crypto: sortedCryptoResults };
         } catch (cgError) {
           console.warn('CoinGecko search failed, falling back to Polygon:', cgError);
           // Fallback to Polygon if CoinGecko fails
@@ -57,7 +69,18 @@ export async function GET(request: NextRequest) {
             active: true,
             limit,
           });
-          results = { [market]: response.results || [] };
+          
+          // Sort fallback results to prioritize exact matches
+          const upperQuery = query.toUpperCase();
+          const sortedResults = (response.results || []).sort((a, b) => {
+            const aExact = a.ticker === upperQuery;
+            const bExact = b.ticker === upperQuery;
+            if (aExact && !bExact) return -1;
+            if (!aExact && bExact) return 1;
+            return 0;
+          });
+          
+          results = { [market]: sortedResults };
         }
       } else {
         // Use Polygon for stocks and forex
@@ -67,7 +90,18 @@ export async function GET(request: NextRequest) {
           active: true,
           limit,
         });
-        results = { [market]: response.results || [] };
+        
+        // Sort results to prioritize exact matches
+        const upperQuery = query.toUpperCase();
+        const sortedResults = (response.results || []).sort((a, b) => {
+          const aExact = a.ticker === upperQuery;
+          const bExact = b.ticker === upperQuery;
+          if (aExact && !bExact) return -1;
+          if (!aExact && bExact) return 1;
+          return 0;
+        });
+        
+        results = { [market]: sortedResults };
       }
     } else {
       // Search all markets - combine Polygon stocks/forex with CoinGecko crypto
@@ -102,7 +136,37 @@ export async function GET(request: NextRequest) {
         cryptos = polygonResults.status === 'fulfilled' ? polygonResults.value.cryptos || [] : [];
       }
 
-      results = { stocks, cryptos, forex };
+      // Prioritize exact matches for all markets
+      const upperQuery = query.toUpperCase();
+      
+      // Sort stocks to prioritize exact matches
+      const sortedStocks = stocks.sort((a, b) => {
+        const aExact = a.ticker === upperQuery;
+        const bExact = b.ticker === upperQuery;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        return 0;
+      });
+
+      // Sort crypto to prioritize exact matches
+      const sortedCryptos = cryptos.sort((a, b) => {
+        const aExact = a.ticker === upperQuery;
+        const bExact = b.ticker === upperQuery;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        return 0;
+      });
+
+      // Sort forex to prioritize exact matches
+      const sortedForex = forex.sort((a, b) => {
+        const aExact = a.ticker === upperQuery;
+        const bExact = b.ticker === upperQuery;
+        if (aExact && !bExact) return -1;
+        if (!aExact && bExact) return 1;
+        return 0;
+      });
+
+      results = { stocks: sortedStocks, cryptos: sortedCryptos, forex: sortedForex };
     }
 
     return NextResponse.json({

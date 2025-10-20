@@ -3,18 +3,16 @@
 import React from 'react';
 import { Menu, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { SearchInput } from '@/components/search';
-import { useSymbol, useWebSocket } from '@/contexts';
+import { useWebSocket } from '@/contexts';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { AlertsMenu } from '@/components/auth/AlertsMenu';
 import Link from 'next/link';
 
-interface HeaderProps {
+interface SimpleHeaderProps {
   onMenuToggle?: () => void;
 }
 
-export function Header({ onMenuToggle }: HeaderProps) {
-  const { selectSymbol } = useSymbol();
+export function SimpleHeader({ onMenuToggle }: SimpleHeaderProps) {
   const { isConnected } = useWebSocket();
 
   return (
@@ -37,13 +35,9 @@ export function Header({ onMenuToggle }: HeaderProps) {
           </Link>
         </div>
 
-        {/* Center Section: Search */}
-        <div className="flex-1 max-w-lg mx-4">
-          <SearchInput 
-            placeholder="Search stocks, crypto..."
-            onSymbolSelect={selectSymbol}
-            className="w-full"
-          />
+        {/* Center Section: Empty (no search bar) */}
+        <div className="flex-1 max-w-md mx-4">
+          {/* Empty space where search would be */}
         </div>
 
         {/* Right Section: Actions */}

@@ -324,16 +324,29 @@ export function SymbolProvider({ children, apiKey }: SymbolProviderProps) {
         })));
       }
 
-      // Deduplicate results - prefer crypto for common tickers like BTC, ETH
+      // Deduplicate results - prioritize exact matches and traditional markets
       const deduplicatedResults = allResults.reduce((acc, current) => {
         const existing = acc.find(item => item.symbol === current.symbol);
         if (!existing) {
           acc.push(current);
         } else {
-          // If duplicate found, prefer crypto over stocks/forex for popular symbols
+          // If duplicate found, prefer stocks/forex over crypto for exact matches
           const existingIndex = acc.indexOf(existing);
-          if (current.market === 'crypto' && existing.market !== 'crypto') {
-            acc[existingIndex] = current;
+          const queryUpper = query.toUpperCase().trim();
+          const isExactMatch = current.symbol.toUpperCase() === queryUpper;
+          
+          if (isExactMatch) {
+            // For exact matches, prefer stocks over crypto
+            if (current.market === 'stocks' && existing.market === 'crypto') {
+              acc[existingIndex] = current;
+            } else if (current.market === 'forex' && existing.market === 'crypto') {
+              acc[existingIndex] = current;
+            }
+          } else {
+            // For non-exact matches, prefer crypto for common symbols like BTC, ETH
+            if (current.market === 'crypto' && existing.market !== 'crypto') {
+              acc[existingIndex] = current;
+            }
           }
         }
         return acc;

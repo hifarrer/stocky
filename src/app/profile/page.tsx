@@ -7,10 +7,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Mail, Lock, Loader2 } from 'lucide-react';
+import { SimpleHeader } from '@/components/layout/SimpleHeader';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, isLoading, refreshUser } = useAuth();
   const router = useRouter();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Email form state
   const [email, setEmail] = useState('');
@@ -159,8 +161,13 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-        <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+      <div className="min-h-screen bg-background text-foreground">
+        <SimpleHeader 
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+        />
+        <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
+          <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+        </div>
       </div>
     );
   }
@@ -170,7 +177,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-4 py-8">
+    <div className="min-h-screen bg-background text-foreground">
+      <SimpleHeader 
+        onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      />
+      <div className="p-4 py-8">
       <div className="max-w-3xl mx-auto">
         {/* Back button */}
         <Button
@@ -190,7 +201,7 @@ export default function ProfilePage() {
 
         <div className="space-y-6">
           {/* Account Info */}
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-slate-700 bg-slate-900/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white">Account Information</CardTitle>
               <CardDescription className="text-slate-400">
@@ -216,7 +227,7 @@ export default function ProfilePage() {
           </Card>
 
           {/* Update Email */}
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-slate-700 bg-slate-900/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center">
                 <Mail className="mr-2 h-5 w-5" />
@@ -238,7 +249,7 @@ export default function ProfilePage() {
                     placeholder="your@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-slate-800 border-slate-600 text-white"
                     disabled={emailLoading}
                   />
                 </div>
@@ -274,7 +285,7 @@ export default function ProfilePage() {
           </Card>
 
           {/* Update Password */}
-          <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
+          <Card className="border-slate-700 bg-slate-900/50 backdrop-blur">
             <CardHeader>
               <CardTitle className="text-white flex items-center">
                 <Lock className="mr-2 h-5 w-5" />
@@ -296,7 +307,7 @@ export default function ProfilePage() {
                     placeholder="••••••••"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-slate-800 border-slate-600 text-white"
                     disabled={passwordLoading}
                   />
                 </div>
@@ -311,7 +322,7 @@ export default function ProfilePage() {
                     placeholder="••••••••"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-slate-800 border-slate-600 text-white"
                     disabled={passwordLoading}
                   />
                   <p className="text-xs text-slate-400">Must be at least 8 characters</p>
@@ -327,7 +338,7 @@ export default function ProfilePage() {
                     placeholder="••••••••"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-slate-800 border-slate-600 text-white"
                     disabled={passwordLoading}
                   />
                 </div>
@@ -362,6 +373,7 @@ export default function ProfilePage() {
             </CardContent>
           </Card>
         </div>
+      </div>
       </div>
     </div>
   );

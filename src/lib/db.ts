@@ -1,4 +1,6 @@
 import { Pool } from 'pg';
+import { ensureDatabaseInitialized } from './db-init';
+import { initializeDatabaseDirectly } from './db-auto-init';
 
 // Create a singleton pool instance
 let pool: Pool | null = null;
@@ -39,8 +41,29 @@ export async function query<T = Record<string, unknown>>(
   params?: unknown[]
 ): Promise<T[]> {
   const pool = getPool();
-  const result = await pool.query(text, params);
-  return result.rows;
+  
+  try {
+    const result = await pool.query(text, params);
+    return result.rows;
+  } catch (error: any) {
+    // If the error is about missing tables, try to initialize the database
+    if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
+      console.log('🔧 Database tables missing, initializing...');
+      try {
+        await initializeDatabaseDirectly();
+        console.log('✅ Database initialization completed');
+      } catch (initError) {
+        console.error('❌ Database initialization failed:', initError);
+        // Try the other initialization method as fallback
+        await ensureDatabaseInitialized();
+      }
+      
+      // Retry the query after initialization
+      const result = await pool.query(text, params);
+      return result.rows;
+    }
+    throw error;
+  }
 }
 
 // Helper function to execute a single query and return one row
@@ -48,8 +71,30 @@ export async function queryOne<T = Record<string, unknown>>(
   text: string,
   params?: unknown[]
 ): Promise<T | null> {
-  const rows = await query<T>(text, params);
-  return rows[0] || null;
+  const pool = getPool();
+  
+  try {
+    const result = await pool.query(text, params);
+    return result.rows[0] || null;
+  } catch (error: any) {
+    // If the error is about missing tables, try to initialize the database
+    if (error.message && error.message.includes('relation') && error.message.includes('does not exist')) {
+      console.log('🔧 Database tables missing, initializing...');
+      try {
+        await initializeDatabaseDirectly();
+        console.log('✅ Database initialization completed');
+      } catch (initError) {
+        console.error('❌ Database initialization failed:', initError);
+        // Try the other initialization method as fallback
+        await ensureDatabaseInitialized();
+      }
+      
+      // Retry the query after initialization
+      const result = await pool.query(text, params);
+      return result.rows[0] || null;
+    }
+    throw error;
+  }
 }
 
 // Close the pool (useful for cleanup in tests or shutdown)

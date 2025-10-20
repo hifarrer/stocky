@@ -11,7 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
-import { User, LogOut, ChevronDown } from 'lucide-react';
+import { User, LogOut, ChevronDown, Briefcase } from 'lucide-react';
 
 export function UserMenu() {
   const { user, isAuthenticated, logout, isLoading } = useAuth();
@@ -67,6 +67,13 @@ export function UserMenu() {
         >
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => router.push('/portfolio')}
+          className="cursor-pointer text-slate-200 focus:bg-slate-700 focus:text-white"
+        >
+          <Briefcase className="mr-2 h-4 w-4" />
+          <span>Portfolio</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="bg-slate-700" />
         <DropdownMenuItem

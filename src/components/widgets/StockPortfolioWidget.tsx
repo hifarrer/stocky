@@ -11,7 +11,8 @@ import {
   TrendingUp, 
   TrendingDown, 
   DollarSign,
-  X
+  X,
+  TrendingUp as StockIcon
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSymbol } from '@/contexts/SymbolContext';
@@ -38,11 +39,11 @@ interface PortfolioItem {
   chart_data?: number[];
 }
 
-interface PortfolioWidgetProps {
+interface StockPortfolioWidgetProps {
   className?: string;
 }
 
-export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
+export function StockPortfolioWidget({ className }: StockPortfolioWidgetProps) {
   const { user, token } = useAuth();
   const { selectSymbol, searchSymbols, searchState } = useSymbol();
   const [portfolios, setPortfolios] = useState<Portfolio[]>([]);
@@ -67,18 +68,18 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
       const data = await response.json();
       
       if (data.success) {
-        // Filter for crypto portfolios only
-        const cryptoPortfolios = data.data.filter((p: Portfolio) => 
-          p.name.toLowerCase().includes('crypto') || p.is_default
+        // Filter for stock portfolios only
+        const stockPortfolios = data.data.filter((p: Portfolio) => 
+          p.name.toLowerCase().includes('stock')
         );
-        setPortfolios(cryptoPortfolios);
+        setPortfolios(stockPortfolios);
         setError(null); // Clear any previous errors
-        // Set default crypto portfolio as selected
-        const defaultPortfolio = cryptoPortfolios.find((p: Portfolio) => p.is_default);
+        // Set default stock portfolio as selected
+        const defaultPortfolio = stockPortfolios.find((p: Portfolio) => p.name.toLowerCase().includes('stock'));
         if (defaultPortfolio) {
           setSelectedPortfolio(defaultPortfolio);
-        } else if (cryptoPortfolios.length > 0) {
-          setSelectedPortfolio(cryptoPortfolios[0]);
+        } else if (stockPortfolios.length > 0) {
+          setSelectedPortfolio(stockPortfolios[0]);
         }
       } else {
         setError(data.error || 'Failed to load portfolios');
@@ -94,7 +95,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
   const createDefaultPortfolio = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/portfolio/create-crypto-default', {
+      const response = await fetch('/api/portfolio/create-stock-default', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -103,15 +104,15 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
       const data = await response.json();
       
       if (data.success) {
-        console.log('Default crypto portfolio ready:', data.message || 'Created successfully');
+        console.log('Default stock portfolio ready:', data.message || 'Created successfully');
         await loadPortfolios();
       } else {
-        console.error('Failed to create default crypto portfolio:', data.error);
-        setError(data.error || 'Failed to create default crypto portfolio');
+        console.error('Failed to create default stock portfolio:', data.error);
+        setError(data.error || 'Failed to create default stock portfolio');
       }
     } catch (error) {
-      console.error('Error creating default crypto portfolio:', error);
-      setError('Failed to create default crypto portfolio');
+      console.error('Error creating default stock portfolio:', error);
+      setError('Failed to create default stock portfolio');
     } finally {
       setLoading(false);
     }
@@ -148,15 +149,15 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
         return;
       }
 
-      // Filter for crypto only
-      const cryptoResults = searchState.results.filter(result => result.market === 'crypto');
+      // Filter for stocks only
+      const stockResults = searchState.results.filter(result => result.market === 'stocks');
       
-      if (cryptoResults.length === 0) {
-        setError('Crypto symbol not found. Please search for a valid cryptocurrency symbol.');
+      if (stockResults.length === 0) {
+        setError('Stock symbol not found. Please search for a valid stock symbol.');
         return;
       }
 
-      const symbolData = cryptoResults[0];
+      const symbolData = stockResults[0];
       const marketType = symbolData.market;
 
       const response = await fetch(`/api/portfolio/${selectedPortfolio.id}/items`, {
@@ -258,13 +259,13 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
       <Card className={`${className} h-full flex flex-col`}>
         <CardHeader className="flex-shrink-0">
           <CardTitle className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Crypto Portfolio
+            <StockIcon className="h-5 w-5" />
+            Stock Portfolio
           </CardTitle>
         </CardHeader>
         <CardContent className="flex-1 flex items-center justify-center">
           <p className="text-muted-foreground text-center py-8">
-            Please log in to view your portfolio
+            Please log in to view your stock portfolio
           </p>
         </CardContent>
       </Card>
@@ -276,8 +277,8 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
       <CardHeader className="flex-shrink-0">
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <DollarSign className="h-5 w-5" />
-            Crypto Portfolio
+            <StockIcon className="h-5 w-5" />
+            Stock Portfolio
           </div>
           <Button
             size="sm"
@@ -285,7 +286,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
             className="gap-2"
           >
             <Plus className="h-4 w-4" />
-            Add Crypto
+            Add Stock
           </Button>
         </CardTitle>
       </CardHeader>
@@ -299,7 +300,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
         {showAddForm && (
           <div className="space-y-3 p-4 border rounded-lg bg-muted/50">
             <div className="flex items-center justify-between">
-              <h4 className="font-medium">Add New Crypto</h4>
+              <h4 className="font-medium">Add New Stock</h4>
               <Button
                 variant="ghost"
                 size="sm"
@@ -310,7 +311,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
             </div>
             <div className="grid grid-cols-2 gap-2">
               <Input
-                placeholder="Crypto Symbol (e.g., BTC, ETH)"
+                placeholder="Stock Symbol (e.g., AAPL)"
                 value={newSymbol}
                 onChange={(e) => setNewSymbol(e.target.value.toUpperCase())}
               />
@@ -340,7 +341,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
               disabled={loading || !newSymbol.trim()}
               className="w-full"
             >
-              {loading ? 'Adding...' : 'Add to Crypto Portfolio'}
+              {loading ? 'Adding...' : 'Add to Portfolio'}
             </Button>
           </div>
         )}
@@ -396,13 +397,13 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
           </div>
         ) : (
           <div className="text-center py-8">
-            <DollarSign className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <StockIcon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
             <p className="text-muted-foreground">
-              {selectedPortfolio ? 'No crypto in portfolio' : 'No portfolio selected'}
+              {selectedPortfolio ? 'No stocks in portfolio' : 'No portfolio selected'}
             </p>
             {!selectedPortfolio && (
               <p className="text-sm text-muted-foreground mt-2">
-                Create a portfolio to start tracking your crypto investments
+                Create a portfolio to start tracking your stock investments
               </p>
             )}
           </div>

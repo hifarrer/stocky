@@ -119,6 +119,6 @@
 
 /* Make sure widgets don't overflow */
 .react-grid-item {
-  overflow: hidden;
+  overflow: visible;
 }
 

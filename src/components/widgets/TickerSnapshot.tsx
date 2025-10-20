@@ -286,7 +286,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
       {/* Price Information */}
       <div className="mb-6">
         <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-3xl font-bold">
+          <span className="text-3xl font-bold tracking-tight">
             {formatPrice(snapshotData.price)}
           </span>
           {isConnected && (
@@ -294,18 +294,20 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
           )}
         </div>
         
-        <div className={`flex items-center gap-2 text-sm ${
-          isPositive ? 'text-success' : 'text-danger'
+        <div className={`flex items-center gap-2 text-sm px-3 py-1.5 rounded-lg transition-all duration-300 hover:scale-105 ${
+          isPositive 
+            ? 'text-success bg-success/10 border border-success/20 hover:bg-success/15 price-change-positive price-glow-positive' 
+            : 'text-danger bg-danger/10 border border-danger/20 hover:bg-danger/15 price-change-negative price-glow-negative'
         }`}>
           {isPositive ? (
-            <TrendingUp className="h-4 w-4" />
+            <TrendingUp className="h-4 w-4 animate-pulse" />
           ) : (
-            <TrendingDown className="h-4 w-4" />
+            <TrendingDown className="h-4 w-4 animate-pulse" />
           )}
-          <span className="font-medium">
+          <span className="font-semibold">
             {isPositive ? '+' : ''}{formatPrice(snapshotData.change)}
           </span>
-          <span>
+          <span className="font-medium">
             ({isPositive ? '+' : ''}{snapshotData.changePercent.toFixed(2)}%)
           </span>
         </div>
@@ -314,30 +316,30 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
       {/* Key Metrics */}
       <div className="space-y-3">
         <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
+          <div className="space-y-1 p-2 rounded-md bg-muted/30">
             <div className="text-xs text-muted-foreground">Open</div>
             <div className="text-sm font-medium">{formatPrice(snapshotData.open)}</div>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 p-2 rounded-md bg-success/5 border border-success/10">
             <div className="text-xs text-muted-foreground">High</div>
-            <div className="text-sm font-medium">{formatPrice(snapshotData.high)}</div>
+            <div className="text-sm font-medium text-success">{formatPrice(snapshotData.high)}</div>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 p-2 rounded-md bg-danger/5 border border-danger/10">
             <div className="text-xs text-muted-foreground">Low</div>
-            <div className="text-sm font-medium">{formatPrice(snapshotData.low)}</div>
+            <div className="text-sm font-medium text-danger">{formatPrice(snapshotData.low)}</div>
           </div>
-          <div className="space-y-1">
+          <div className="space-y-1 p-2 rounded-md bg-muted/30">
             <div className="text-xs text-muted-foreground">Prev Close</div>
             <div className="text-sm font-medium">{formatPrice(snapshotData.previousClose)}</div>
           </div>
         </div>
 
         <div className="pt-2 border-t">
-          <div className="flex items-center gap-2 mb-1">
-            <Volume2 className="h-3 w-3 text-muted-foreground" />
+          <div className="flex items-center gap-2 mb-1 p-2 rounded-md bg-info/5 border border-info/10">
+            <Volume2 className="h-3 w-3 text-info" />
             <span className="text-xs text-muted-foreground">Volume</span>
           </div>
-          <div className="text-sm font-medium">{formatNumber(snapshotData.volume)}</div>
+          <div className="text-sm font-medium px-2">{formatNumber(snapshotData.volume)}</div>
         </div>
       </div>
 

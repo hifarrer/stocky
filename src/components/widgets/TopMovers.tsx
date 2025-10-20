@@ -182,15 +182,19 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
     return `$${price.toFixed(2)}`;
   };
 
-  const renderMoverRow = (item: MoverData) => {
+  const renderMoverRow = (item: MoverData, index: number, array: MoverData[]) => {
     const isPositive = item.changePercent >= 0;
+    const isLast = index === array.length - 1;
 
     return (
-      <div
-        key={item.symbol}
-        className="flex items-center justify-between py-2 px-3 hover:bg-muted/50 rounded cursor-pointer transition-colors"
-        onClick={() => handleSymbolClick(item)}
-      >
+      <div key={item.symbol} className={cn(
+        index === 0 && "pt-1",
+        isLast && "pb-1"
+      )}>
+        <div
+          className="flex items-center justify-between py-3 px-3 hover:bg-muted/50 hover:shadow-sm rounded cursor-pointer transition-all duration-200"
+          onClick={() => handleSymbolClick(item)}
+        >
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <span className="font-medium text-sm">{item.symbol}</span>
@@ -218,6 +222,10 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
             {formatNumber(item.volume)}
           </div>
         </div>
+        </div>
+        {!isLast && (
+          <div className="mx-3 border-b border-border/30" />
+        )}
       </div>
     );
   };
@@ -278,9 +286,9 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
         </TabsList>
 
         <div className="flex-1 overflow-auto">
-          <TabsContent value="gainers" className="mt-0 space-y-1">
+          <TabsContent value="gainers" className="mt-0">
             {gainers.length > 0 ? (
-              gainers.map(renderMoverRow)
+              gainers.map((item, index) => renderMoverRow(item, index, gainers))
             ) : (
               <div className="text-center text-sm text-muted-foreground py-4">
                 No gainers data available
@@ -288,9 +296,9 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="losers" className="mt-0 space-y-1">
+          <TabsContent value="losers" className="mt-0">
             {losers.length > 0 ? (
-              losers.map(renderMoverRow)
+              losers.map((item, index) => renderMoverRow(item, index, losers))
             ) : (
               <div className="text-center text-sm text-muted-foreground py-4">
                 No losers data available
@@ -298,9 +306,9 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="active" className="mt-0 space-y-1">
+          <TabsContent value="active" className="mt-0">
             {mostActive.length > 0 ? (
-              mostActive.map(renderMoverRow)
+              mostActive.map((item, index) => renderMoverRow(item, index, mostActive))
             ) : (
               <div className="text-center text-sm text-muted-foreground py-4">
                 No active data available

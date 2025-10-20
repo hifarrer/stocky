@@ -22,21 +22,23 @@ const defaultLayouts = {
   lg: [
     { i: 'price-chart', x: 0, y: 0, w: 2, h: 10, minW: 2, minH: 8 },
     { i: 'ticker-snapshot', x: 2, y: 0, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'portfolio-widget', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-heatmap', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'crypto-heatmap', x: 2, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'top-movers', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'technical-indicators', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'sector-performance', x: 2, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'market-sentiment', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'social-sentiment', x: 1, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'news-widget', x: 2, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'economic-calendar', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-portfolio-widget', x: 0, y: 10, w: 1, h: 15, minW: 1, minH: 12 },
+    { i: 'stock-portfolio-widget', x: 1, y: 10, w: 1, h: 15, minW: 1, minH: 12 },
+    { i: 'market-heatmap', x: 2, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-heatmap', x: 2, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'top-movers', x: 0, y: 25, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'technical-indicators', x: 1, y: 25, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'sector-performance', x: 2, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'market-sentiment', x: 0, y: 35, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'social-sentiment', x: 1, y: 35, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'news-widget', x: 2, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'economic-calendar', x: 0, y: 45, w: 1, h: 10, minW: 1, minH: 8 },
   ],
   md: [
     { i: 'price-chart', x: 0, y: 0, w: 2, h: 10, minW: 2, minH: 8 },
     { i: 'ticker-snapshot', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'portfolio-widget', x: 1, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-portfolio-widget', x: 1, y: 10, w: 1, h: 15, minW: 1, minH: 12 },
+    { i: 'stock-portfolio-widget', x: 0, y: 25, w: 1, h: 15, minW: 1, minH: 12 },
     { i: 'market-heatmap', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'crypto-heatmap', x: 1, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'top-movers', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
@@ -50,7 +52,8 @@ const defaultLayouts = {
   sm: [
     { i: 'price-chart', x: 0, y: 0, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'ticker-snapshot', x: 0, y: 10, w: 1, h: 10, minW: 1, minH: 8 },
-    { i: 'portfolio-widget', x: 0, y: 20, w: 1, h: 10, minW: 1, minH: 8 },
+    { i: 'crypto-portfolio-widget', x: 0, y: 20, w: 1, h: 15, minW: 1, minH: 12 },
+    { i: 'stock-portfolio-widget', x: 0, y: 35, w: 1, h: 15, minW: 1, minH: 12 },
     { i: 'market-heatmap', x: 0, y: 30, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'crypto-heatmap', x: 0, y: 40, w: 1, h: 10, minW: 1, minH: 8 },
     { i: 'top-movers', x: 0, y: 50, w: 1, h: 10, minW: 1, minH: 8 },
@@ -121,7 +124,8 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
   const widgetKeys = [
     'price-chart',
     'ticker-snapshot',
-    'portfolio-widget',
+    'crypto-portfolio-widget',
+    'stock-portfolio-widget',
     'market-heatmap',
     'crypto-heatmap',
     'top-movers',
@@ -190,7 +194,7 @@ export function Widget({ children, className = '', title, size = 'md' }: WidgetP
           <div className="text-xs text-muted-foreground">Drag to reorder</div>
         </div>
       )}
-      <div className="p-4 flex flex-col overflow-hidden" style={{ height: 'calc(100% - 3.5rem)' }}>
+      <div className="p-4 flex flex-col overflow-y-auto" style={{ height: 'calc(100% - 3.5rem)' }}>
         {children}
       </div>
     </div>
