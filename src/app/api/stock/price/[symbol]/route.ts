@@ -27,8 +27,8 @@ export async function GET(
     const snapshotResponse = await polygonClient.snapshot.getTicker(symbol);
     console.log('Polygon snapshot response:', JSON.stringify(snapshotResponse, null, 2));
     
-    // The response structure is { results: { ... } }
-    if (!snapshotResponse || !snapshotResponse.results) {
+    // The response structure is { ticker: { ... } }
+    if (!snapshotResponse || !snapshotResponse.ticker) {
       console.log('No snapshot ticker found for:', symbol);
       return NextResponse.json(
         {
@@ -41,11 +41,11 @@ export async function GET(
       );
     }
 
-    const snapshot = snapshotResponse.results;
+    const snapshot = snapshotResponse.ticker;
     console.log('Snapshot data:', JSON.stringify(snapshot, null, 2));
     
-    // Get the current price from the snapshot
-    const currentPrice = snapshot.value || snapshot.min?.c || snapshot.prevDay?.c || snapshot.last_trade?.p || null;
+    // Get the current price from the snapshot - try multiple possible price fields
+    const currentPrice = snapshot.min?.c || snapshot.day?.c || snapshot.prevDay?.c || snapshot.value || null;
     console.log('Extracted current price:', currentPrice);
     
     return NextResponse.json({

@@ -21,11 +21,11 @@ export class SnapshotClient extends PolygonBaseClient {
   /**
    * Get snapshot for a specific ticker
    */
-  async getTicker(ticker: string): Promise<{ results: SnapshotData }> {
+  async getTicker(ticker: string): Promise<{ ticker: SnapshotData }> {
     const validatedTicker = this.validateSymbol(ticker);
     const endpoint = `/v2/snapshot/locale/us/markets/stocks/tickers/${validatedTicker}`;
     
-    return this.makeRequest<{ results: SnapshotData }>(endpoint);
+    return this.makeRequest<{ ticker: SnapshotData }>(endpoint);
   }
 
   /**
@@ -54,11 +54,11 @@ export class SnapshotClient extends PolygonBaseClient {
   /**
    * Get crypto snapshot for specific ticker
    */
-  async getCryptoTicker(ticker: string): Promise<{ results: SnapshotData }> {
+  async getCryptoTicker(ticker: string): Promise<{ ticker: SnapshotData }> {
     const validatedTicker = this.validateSymbol(ticker);
     const endpoint = `/v2/snapshot/locale/global/markets/crypto/tickers/${validatedTicker}`;
     
-    return this.makeRequest<{ results: SnapshotData }>(endpoint);
+    return this.makeRequest<{ ticker: SnapshotData }>(endpoint);
   }
 
   /**
@@ -78,7 +78,7 @@ export class SnapshotClient extends PolygonBaseClient {
     
     // Make concurrent requests for better performance
     const promises = validatedTickers.map(ticker => 
-      this.getTicker(ticker).then(response => response.results)
+      this.getTicker(ticker).then(response => response.ticker)
     );
     
     try {
@@ -166,9 +166,9 @@ export class SnapshotClient extends PolygonBaseClient {
     // to get additional financial metrics
     
     return {
-      ...snapshot.results,
+      ...snapshot.ticker,
       extendedData: {
-        volume24h: snapshot.results.min?.v,
+        volume24h: snapshot.ticker.min?.v,
         avgVolume: undefined, // Would need historical data
         marketCap: undefined, // Would need company details
         pe: undefined, // Would need financial data
@@ -189,9 +189,9 @@ export class SnapshotClient extends PolygonBaseClient {
       const snapshot = await this.getTicker('AAPL');
       
       return {
-        isOpen: snapshot.results.market_status === 'open',
-        status: snapshot.results.market_status,
-        lastUpdated: new Date(snapshot.results.updated),
+        isOpen: snapshot.ticker.market_status === 'open',
+        status: snapshot.ticker.market_status,
+        lastUpdated: new Date(snapshot.ticker.updated),
       };
     } catch {
       // Fallback to basic time-based check

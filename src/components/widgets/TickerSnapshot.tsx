@@ -48,7 +48,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     
     try {
       const response = await polygonClient.snapshot.getTicker(symbol);
-      const data = response.results;
+      const data = response.ticker;
       console.log('TickerSnapshot: Received response', response);
       console.log('TickerSnapshot: Received data', data);
       

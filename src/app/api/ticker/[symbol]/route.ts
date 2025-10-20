@@ -38,7 +38,7 @@ export async function GET(
       
       return NextResponse.json({
         success: true,
-        data: response.results,
+        data: response.ticker,
         symbol,
         timestamp: new Date().toISOString(),
       });
