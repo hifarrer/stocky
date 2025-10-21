@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Responsive, WidthProvider, Layout } from 'react-grid-layout';
 import { Button } from '@/components/ui/button';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, X } from 'lucide-react';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 
@@ -69,6 +69,7 @@ const defaultLayouts = {
 export function DashboardGrid({ children, className = '' }: DashboardGridProps) {
   const [layouts, setLayouts] = useState(defaultLayouts);
   const [mounted, setMounted] = useState(false);
+  const [hiddenWidgets, setHiddenWidgets] = useState<Set<string>>(new Set());
 
   // Load saved layout from localStorage on mount
   useEffect(() => {
@@ -76,15 +77,23 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
     try {
       const savedVersion = localStorage.getItem('dashboard-layout-version');
       const savedLayouts = localStorage.getItem('dashboard-layout');
+      const savedHiddenWidgets = localStorage.getItem('dashboard-hidden-widgets');
       
       // Check if we need to reset due to version mismatch
       if (savedVersion !== String(LAYOUT_VERSION)) {
         console.log('Layout version mismatch, resetting to defaults');
         localStorage.setItem('dashboard-layout-version', String(LAYOUT_VERSION));
         localStorage.removeItem('dashboard-layout');
+        localStorage.removeItem('dashboard-hidden-widgets');
         setLayouts(defaultLayouts);
-      } else if (savedLayouts) {
-        setLayouts(JSON.parse(savedLayouts));
+        setHiddenWidgets(new Set());
+      } else {
+        if (savedLayouts) {
+          setLayouts(JSON.parse(savedLayouts));
+        }
+        if (savedHiddenWidgets) {
+          setHiddenWidgets(new Set(JSON.parse(savedHiddenWidgets)));
+        }
       }
     } catch (error) {
       console.error('Error loading dashboard layout:', error);
@@ -104,9 +113,20 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
   // Reset layout to default
   const handleResetLayout = () => {
     setLayouts(defaultLayouts);
+    setHiddenWidgets(new Set());
     localStorage.removeItem('dashboard-layout');
+    localStorage.removeItem('dashboard-hidden-widgets');
     localStorage.setItem('dashboard-layout-version', String(LAYOUT_VERSION));
   };
+
+  // Hide a widget
+  const handleHideWidget = (widgetId: string) => {
+    const newHiddenWidgets = new Set(hiddenWidgets);
+    newHiddenWidgets.add(widgetId);
+    setHiddenWidgets(newHiddenWidgets);
+    localStorage.setItem('dashboard-hidden-widgets', JSON.stringify(Array.from(newHiddenWidgets)));
+  };
+
 
   // Don't render until mounted to avoid SSR issues
   if (!mounted) {
@@ -137,6 +157,10 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
     'economic-calendar',
   ];
 
+  // Filter out hidden widgets
+  const visibleWidgets = childrenArray.filter((_, index) => !hiddenWidgets.has(widgetKeys[index]));
+  const visibleKeys = widgetKeys.filter(key => !hiddenWidgets.has(key));
+
   return (
     <div className={`relative ${className}`}>
       {/* Reset Layout Button */}
@@ -164,14 +188,31 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
         isResizable={true}
         draggableHandle=".widget-drag-handle"
       >
-        {childrenArray.map((child, index) => (
-          <div key={widgetKeys[index]} className="widget-container">
+      {visibleWidgets.map((child, index) => (
+        <div key={visibleKeys[index]} className="widget-container">
+          <WidgetHideWrapper 
+            widgetId={visibleKeys[index]}
+            onHide={() => handleHideWidget(visibleKeys[index])}
+          >
             {child}
-          </div>
-        ))}
+          </WidgetHideWrapper>
+        </div>
+      ))}
       </ResponsiveGridLayout>
     </div>
   );
+}
+
+// Wrapper component to inject onHide prop into widget components
+interface WidgetHideWrapperProps {
+  widgetId: string;
+  onHide: () => void;
+  children: React.ReactNode;
+}
+
+function WidgetHideWrapper({ widgetId, onHide, children }: WidgetHideWrapperProps) {
+  // Clone the child element and add the onHide prop
+  return React.cloneElement(children as React.ReactElement, { onHide } as any);
 }
 
 interface WidgetProps {
@@ -179,9 +220,10 @@ interface WidgetProps {
   className?: string;
   title?: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  onHide?: () => void;
 }
 
-export function Widget({ children, className = '', title, size = 'md' }: WidgetProps) {
+export function Widget({ children, className = '', title, size = 'md', onHide }: WidgetProps) {
   return (
     <div className={`
       relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm
@@ -189,9 +231,22 @@ export function Widget({ children, className = '', title, size = 'md' }: WidgetP
       ${className}
     `}>
       {title && (
-        <div className="border-b px-4 py-3 flex items-center justify-between widget-drag-handle cursor-move hover:bg-muted/50 transition-colors">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <div className="text-xs text-muted-foreground">Drag to reorder</div>
+        <div className="border-b px-4 py-3 flex items-center justify-between hover:bg-muted/50 transition-colors">
+          <div className="widget-drag-handle cursor-move flex items-center gap-2">
+            <h3 className="text-lg font-semibold">{title}</h3>
+            <div className="text-xs text-muted-foreground">Drag to reorder</div>
+          </div>
+          <div className="flex items-center gap-2">
+            {onHide && (
+              <button
+                onClick={onHide}
+                className="p-1 hover:bg-muted rounded transition-colors"
+                title="Close widget"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
         </div>
       )}
       <div className="p-4 flex flex-col overflow-y-auto" style={{ height: 'calc(100% - 3.5rem)' }}>
@@ -201,100 +256,109 @@ export function Widget({ children, className = '', title, size = 'md' }: WidgetP
   );
 }
 
+// Widget wrapper that accepts onHide prop
+function WidgetWithHide({ children, title, onHide }: { children: React.ReactNode; title: string; onHide?: () => void }) {
+  return (
+    <Widget title={title} onHide={onHide}>
+      {children}
+    </Widget>
+  );
+}
+
 // Specific widget containers for different sections
-export function PriceChartWidget({ children }: { children: React.ReactNode }) {
+export function PriceChartWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Price Chart">
+    <WidgetWithHide title="Price Chart" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function TickerSnapshotWidget({ children }: { children: React.ReactNode }) {
+export function TickerSnapshotWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Ticker Info">
+    <WidgetWithHide title="Ticker Info" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function MarketHeatmapWidget({ children }: { children: React.ReactNode }) {
+export function MarketHeatmapWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Market Heatmap">
+    <WidgetWithHide title="Market Heatmap" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function CryptoHeatmapWidget({ children }: { children: React.ReactNode }) {
+export function CryptoHeatmapWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Crypto Heatmap">
+    <WidgetWithHide title="Crypto Heatmap" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function NewsWidget({ children }: { children: React.ReactNode }) {
+export function NewsWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Latest News">
+    <WidgetWithHide title="Latest News" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function EconomicCalendarWidget({ children }: { children: React.ReactNode }) {
+export function EconomicCalendarWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Economic Calendar">
+    <WidgetWithHide title="Economic Calendar" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function TopMoversWidget({ children }: { children: React.ReactNode }) {
+export function TopMoversWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Top Movers">
+    <WidgetWithHide title="Top Movers" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function TechnicalIndicatorsWidget({ children }: { children: React.ReactNode }) {
+export function TechnicalIndicatorsWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Technical Indicators">
+    <WidgetWithHide title="Technical Indicators" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function SectorPerformanceWidget({ children }: { children: React.ReactNode }) {
+export function SectorPerformanceWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Sector Performance">
+    <WidgetWithHide title="Sector Performance" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function MarketSentimentWidget({ children }: { children: React.ReactNode }) {
+export function MarketSentimentWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Market Sentiment">
+    <WidgetWithHide title="Market Sentiment" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function SocialSentimentWidget({ children }: { children: React.ReactNode }) {
+export function SocialSentimentWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Social Sentiment">
+    <WidgetWithHide title="Social Sentiment" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
-export function PortfolioWidget({ children }: { children: React.ReactNode }) {
+export function PortfolioWidget({ children, onHide }: { children: React.ReactNode; onHide?: () => void }) {
   return (
-    <Widget title="Portfolio">
+    <WidgetWithHide title="Portfolio" onHide={onHide}>
       {children}
-    </Widget>
+    </WidgetWithHide>
   );
 }
 
