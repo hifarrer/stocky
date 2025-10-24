@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { TrendingUp, TrendingDown, Volume2, Clock, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,20 +39,23 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     return createPolygonClient(apiKey);
   }, []);
 
-  // Fetch snapshot data
-  const fetchSnapshot = async (symbol: string) => {
-    console.log('TickerSnapshot: Fetching data for', symbol);
+  // Fetch snapshot data - memoized to prevent unnecessary re-renders
+  const fetchSnapshot = useCallback(async (symbol: string) => {
+    // Validate symbol format (alphanumeric, 1-5 chars typically)
+    if (!/^[A-Z]{1,5}$/.test(symbol)) {
+      console.warn('TickerSnapshot: Invalid symbol format:', symbol);
+      setError(`Invalid symbol: ${symbol}`);
+      return;
+    }
+    
     setIsLoading(true);
     setError(null);
     
     try {
       const response = await polygonClient.snapshot.getTicker(symbol);
       const data = response.ticker;
-      console.log('TickerSnapshot: Received response', response);
-      console.log('TickerSnapshot: Received data', data);
       
       if (data) {
-        console.log('TickerSnapshot: Setting snapshot data', data);
         setSnapshotData({
           price: data.value || 0,
           change: data.todaysChange || 0,
@@ -66,7 +69,6 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
           marketStatus: data.market_status || 'closed',
         });
       } else {
-        console.log('TickerSnapshot: No data received, showing mock data');
         // Show mock data if API returns no data
         setSnapshotData({
           price: 150.25,
@@ -86,7 +88,6 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
       setError(err instanceof Error ? err.message : 'Failed to load data');
       
       // Show mock data if API fails
-      console.log('TickerSnapshot: Setting mock data due to API failure');
       setSnapshotData({
         price: 150.25,
         change: 2.15,
@@ -102,7 +103,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [polygonClient]);
 
   // Load data when symbol changes
   useEffect(() => {
@@ -111,14 +112,16 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     }
   }, [selectedSymbol, fetchSnapshot]);
 
-  // Update with real-time price
+  // Update with real-time price - removed snapshotData from deps to prevent infinite loop
   useEffect(() => {
-    if (selectedSymbol && isConnected && snapshotData) {
-      const latestPrice = getLatestPrice(displaySymbol.symbol);
+    if (selectedSymbol && isConnected) {
+      const symbol = typeof selectedSymbol === 'string' ? selectedSymbol : selectedSymbol.symbol;
+      const latestPrice = getLatestPrice(symbol);
       
-      if (latestPrice && latestPrice !== snapshotData.price) {
+      if (latestPrice) {
         setSnapshotData(prev => {
-          if (!prev) return null;
+          // Only update if we have previous data and price actually changed
+          if (!prev || latestPrice === prev.price) return prev;
           
           const change = latestPrice - prev.previousClose;
           const changePercent = (change / prev.previousClose) * 100;
@@ -133,7 +136,9 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
         });
       }
     }
-  }, [selectedSymbol, isConnected, getLatestPrice, snapshotData]);
+    // Intentionally not including snapshotData to prevent infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedSymbol, isConnected, getLatestPrice]);
 
   const handleWatchlistToggle = () => {
     if (!selectedSymbol) return;
@@ -202,10 +207,6 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     isActive: true,
     lastUpdated: new Date().toISOString(),
   };
-
-  if (!selectedSymbol) {
-    console.log('TickerSnapshot: No symbol selected, using NVDA as fallback');
-  }
 
   if (isLoading) {
     return (

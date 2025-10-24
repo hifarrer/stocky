@@ -269,7 +269,7 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
     }
   };
 
-  const subscribeToTicker = async (ticker: string, retryCount = 0): Promise<void> => {
+  const subscribeToTicker = useCallback(async (ticker: string, retryCount = 0): Promise<void> => {
     if (!state.client) {
       throw new Error('WebSocket client not initialized');
     }
@@ -303,7 +303,7 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
       }
       throw error;
     }
-  };
+  }, [state.client, state.isConnected, dispatch]);
 
   const unsubscribeFromTicker = async (ticker: string): Promise<void> => {
     if (!state.client || !state.isConnected) {
@@ -316,7 +316,7 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
     dispatch({ type: 'REMOVE_SUBSCRIPTION', payload: upperTicker });
   };
 
-  const subscribeToMultipleTickers = async (tickers: string[], retryCount = 0): Promise<void> => {
+  const subscribeToMultipleTickers = useCallback(async (tickers: string[], retryCount = 0): Promise<void> => {
     if (!state.client) {
       throw new Error('WebSocket client not initialized');
     }
@@ -352,7 +352,7 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
       }
       throw error;
     }
-  };
+  }, [state.client, state.isConnected, dispatch]);
 
   const getLatestPrice = (symbol: string): number | null => {
     return state.latestPrices[symbol.toUpperCase()] || null;

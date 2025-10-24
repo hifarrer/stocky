@@ -38,9 +38,9 @@ export default function RootLayout({
   const userId = "demo-user";
 
   return (
-    <html lang="en" className="dark">
-      <body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
-        <AppProviders 
+        <html lang="en" className="dark">
+          <body className={`${inter.variable} font-sans antialiased flex flex-col min-h-screen`}>
+            <AppProviders
           apiKey={apiKey} 
           userId={userId}
           autoConnectWebSocket={true}

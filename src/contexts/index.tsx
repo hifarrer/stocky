@@ -82,7 +82,7 @@ export function useDashboard() {
         // Could add user notification here
       });
     }
-  }, [symbol.selectedSymbol, webSocket.isConnected, webSocket]);
+  }, [symbol.selectedSymbol, webSocket.isConnected, webSocket.subscribeToTicker]);
 
   // Auto-subscribe to watchlist
   React.useEffect(() => {
@@ -92,7 +92,7 @@ export function useDashboard() {
         // Could add user notification here
       });
     }
-  }, [preferences.watchlist, webSocket.isConnected, webSocket]);
+  }, [preferences.watchlist, webSocket.isConnected, webSocket.subscribeToMultipleTickers]);
 
   return {
     // Current state

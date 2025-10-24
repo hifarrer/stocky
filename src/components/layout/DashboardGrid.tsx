@@ -203,7 +203,7 @@ export function DashboardGrid({ children, className = '' }: DashboardGridProps) 
   );
 }
 
-// Wrapper component to inject onHide prop into widget components
+// Wrapper component to inject onHide into widget wrapper components
 interface WidgetHideWrapperProps {
   widgetId: string;
   onHide: () => void;
@@ -211,8 +211,18 @@ interface WidgetHideWrapperProps {
 }
 
 function WidgetHideWrapper({ onHide, children }: WidgetHideWrapperProps) {
-  // Clone the child element and add the onHide prop
-  return React.cloneElement(children as React.ReactElement, { onHide } as Record<string, unknown>);
+  // Only inject onHide into widget wrapper components, not ErrorBoundary
+  if (React.isValidElement(children)) {
+    // Check if this is an ErrorBoundary component
+    const isErrorBoundary = typeof children.type === 'function' && 
+      children.type.name === 'ErrorBoundary';
+    
+    if (!isErrorBoundary) {
+      // @ts-expect-error - Intentionally injecting onHide prop into widget wrappers
+      return React.cloneElement(children, { onHide });
+    }
+  }
+  return <>{children}</>;
 }
 
 interface WidgetProps {

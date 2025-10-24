@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import {
   LineChart,
   Line,
@@ -93,8 +93,15 @@ export function PriceChart({
   }, []);
 
   // Fetch historical data
-  const fetchChartData = async (symbol: string, timeframe: TimeFrame) => {
+  const fetchChartData = useCallback(async (symbol: string, timeframe: TimeFrame) => {
     if (!symbol) return;
+    
+    // Validate symbol format (alphanumeric, 1-5 chars typically)
+    if (!/^[A-Z]{1,5}$/.test(symbol)) {
+      console.warn('PriceChart: Invalid symbol format:', symbol);
+      setError(`Invalid symbol: ${symbol}`);
+      return;
+    }
     
     setIsLoading(true);
     setError(null);
@@ -142,67 +149,100 @@ export function PriceChart({
     } finally {
       setIsLoading(false);
     }
+  }, [polygonClient]);
+
+  // Use NVDA as fallback when no symbol is selected
+  const displaySymbol = selectedSymbol || {
+    symbol: 'NVDA',
+    name: 'NVIDIA Corporation',
+    market: 'stocks',
+    type: 'stock',
+    exchange: 'NASDAQ',
+    country: 'US',
+    isActive: true,
+    lastUpdated: new Date().toISOString(),
   };
 
   // Load data when symbol or timeframe changes
   useEffect(() => {
-    if (selectedSymbol) {
-      fetchChartData(displaySymbol.symbol, chartTimeframe);
-    }
-  }, [selectedSymbol, chartTimeframe, polygonClient]);
+    fetchChartData(displaySymbol.symbol, chartTimeframe);
+  }, [selectedSymbol, chartTimeframe, polygonClient, displaySymbol.symbol, fetchChartData]);
 
-  // Update with real-time data
+  // Update with real-time data - debounced to prevent glitchy updates
   useEffect(() => {
     if (selectedSymbol && isConnected) {
       const latestPrice = getLatestPrice(displaySymbol.symbol);
       const priceHistory = getPriceHistory(displaySymbol.symbol);
       
       if (latestPrice && priceHistory.length > 0) {
-        // Add real-time updates to chart data
-        const realtimeData = priceHistory.map(entry => ({
-          timestamp: entry.timestamp,
-          price: entry.price,
-          volume: 0, // Volume not available in real-time data
-          high: entry.price,
-          low: entry.price,
-          open: entry.price,
-          close: entry.price,
-          date: format(new Date(entry.timestamp), 'MMM dd'),
-          time: format(new Date(entry.timestamp), 'HH:mm'),
-        }));
-        
-        // Merge with existing data (avoid duplicates)
-        setChartData(prev => {
-          const combined = [...prev, ...realtimeData];
-          const unique = combined.filter((item, index, arr) => 
-            arr.findIndex(t => t.timestamp === item.timestamp) === index
-          );
-          return unique.sort((a, b) => a.timestamp - b.timestamp);
-        });
+        // Debounce real-time updates to prevent glitchy behavior
+        const timeoutId = setTimeout(() => {
+          // Only add the latest price point, not the entire history
+          const latestEntry = priceHistory[priceHistory.length - 1];
+          if (latestEntry) {
+            const realtimeData = [{
+              timestamp: latestEntry.timestamp,
+              price: latestEntry.price,
+              volume: 0, // Volume not available in real-time data
+              high: latestEntry.price,
+              low: latestEntry.price,
+              open: latestEntry.price,
+              close: latestEntry.price,
+              date: format(new Date(latestEntry.timestamp), 'MMM dd'),
+              time: format(new Date(latestEntry.timestamp), 'HH:mm'),
+            }];
+            
+            // Merge with existing data (avoid duplicates)
+            setChartData(prev => {
+              const combined = [...prev, ...realtimeData];
+              const unique = combined.filter((item, index, arr) => 
+                arr.findIndex(t => t.timestamp === item.timestamp) === index
+              );
+              // Keep only the last 100 data points to prevent memory issues
+              return unique.sort((a, b) => a.timestamp - b.timestamp).slice(-100);
+            });
+          }
+        }, 1000); // 1 second debounce
+
+        return () => clearTimeout(timeoutId);
       }
     }
-  }, [selectedSymbol, isConnected, getLatestPrice, getPriceHistory]);
+  }, [selectedSymbol, isConnected, getLatestPrice, getPriceHistory, displaySymbol.symbol]);
 
   const handleTimeframeChange = (newTimeframe: TimeFrame) => {
     setChartTimeframe(newTimeframe);
   };
 
-  const currentPrice = useMemo(() => {
-    if (chartData.length === 0) return null;
-    return chartData[chartData.length - 1]?.price;
+  // Throttle price updates to prevent glitchy display
+  const [throttledPrice, setThrottledPrice] = useState<number | null>(null);
+  const [throttledPriceChange, setThrottledPriceChange] = useState<{absolute: number; percentage: number} | null>(null);
+
+  useEffect(() => {
+    if (chartData.length > 0) {
+      const timeoutId = setTimeout(() => {
+        const current = chartData[chartData.length - 1]?.price;
+        if (current) {
+          setThrottledPrice(current);
+          
+          // Calculate price change only if we have enough data
+          if (chartData.length >= 2) {
+            const previous = chartData[0]?.price;
+            if (previous) {
+              setThrottledPriceChange({
+                absolute: current - previous,
+                percentage: ((current - previous) / previous) * 100,
+              });
+            }
+          }
+        }
+      }, 500); // 500ms throttle
+
+      return () => clearTimeout(timeoutId);
+    }
   }, [chartData]);
 
-  const priceChange = useMemo(() => {
-    if (chartData.length < 2) return null;
-    const current = chartData[chartData.length - 1]?.price;
-    const previous = chartData[0]?.price;
-    if (!current || !previous) return null;
-    
-    return {
-      absolute: current - previous,
-      percentage: ((current - previous) / previous) * 100,
-    };
-  }, [chartData]);
+  const currentPrice = throttledPrice;
+  const priceChange = throttledPriceChange;
 
   const formatTooltipValue = (value: number, name: string) => {
     if (name === 'price') {
@@ -228,20 +268,6 @@ export function PriceChart({
       default:
         return format(date, 'MMM dd');
     }
-  };
-
-  // Use NVDA as fallback when no symbol is selected
-  const displaySymbol = selectedSymbol || {
-    symbol: 'NVDA',
-    name: 'NVIDIA Corporation',
-    market: 'stocks',
-    type: 'stock',
-    exchange: 'NASDAQ',
-    sector: 'Technology',
-    currency: 'USD',
-    country: 'US',
-    isActive: true,
-    lastUpdated: new Date().toISOString(),
   };
 
   return (

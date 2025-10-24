@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Header } from '@/components/layout';
 import {
   DashboardLayout,
@@ -22,6 +22,7 @@ import { useDashboard, usePlan } from '@/contexts';
 import WelcomeModal from '@/components/WelcomeModal';
 import { useWelcomeModal } from '@/hooks/useWelcomeModal';
 import { PlanIndicator } from '@/components/PlanIndicator';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -29,99 +30,112 @@ export default function Home() {
   const { showModal, closeModal } = useWelcomeModal();
   const { hasPortfolioAccess } = usePlan();
 
-  // Debug: Log widget rendering
-  console.log('Dashboard state:', {
-    selectedSymbol: dashboard.selectedSymbol,
-    isWebSocketConnected: dashboard.isWebSocketConnected,
-    watchlist: dashboard.watchlist,
-    apiKey: process.env.NEXT_PUBLIC_POLYGON_API_KEY ? 'Set' : 'Missing'
-  });
-  
-  // Debug: Log when symbol changes
-  useEffect(() => {
-    console.log('Symbol changed:', dashboard.selectedSymbol);
-  }, [dashboard.selectedSymbol]);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Header 
         onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
       
-      <DashboardLayout>
-        {/* Plan Indicator */}
-        <div className="mb-4 flex justify-end">
-          <PlanIndicator />
-        </div>
+      {/* Plan Indicator */}
+      <div className="mb-4 flex justify-end">
+        <PlanIndicator />
+      </div>
 
+      <DashboardLayout>
         {/* Price Chart Widget - Takes up 2x2 space on desktop */}
-        <PriceChartWidget>
-          <PriceChart height={400} showControls={true} />
-        </PriceChartWidget>
+        <ErrorBoundary widgetName="Price Chart">
+          <PriceChartWidget>
+            <PriceChart height={400} showControls={true} />
+          </PriceChartWidget>
+        </ErrorBoundary>
 
         {/* Ticker Snapshot Widget */}
-        <TickerSnapshotWidget>
-          <TickerSnapshot />
-        </TickerSnapshotWidget>
+        <ErrorBoundary widgetName="Ticker Snapshot">
+          <TickerSnapshotWidget>
+            <TickerSnapshot />
+          </TickerSnapshotWidget>
+        </ErrorBoundary>
 
         {/* Crypto Portfolio Widget - Premium Only */}
         {hasPortfolioAccess && (
-          <PortfolioWidgetWrapper>
-            <CryptoPortfolioWidget />
-          </PortfolioWidgetWrapper>
+          <ErrorBoundary widgetName="Crypto Portfolio">
+            <PortfolioWidgetWrapper>
+              <CryptoPortfolioWidget />
+            </PortfolioWidgetWrapper>
+          </ErrorBoundary>
         )}
 
         {/* Stock Portfolio Widget - Premium Only */}
         {hasPortfolioAccess && (
-          <PortfolioWidgetWrapper>
-            <StockPortfolioWidget />
-          </PortfolioWidgetWrapper>
+          <ErrorBoundary widgetName="Stock Portfolio">
+            <PortfolioWidgetWrapper>
+              <StockPortfolioWidget />
+            </PortfolioWidgetWrapper>
+          </ErrorBoundary>
         )}
 
         {/* Market Heatmap Widget */}
-        <MarketHeatmapWidget>
-          <MarketHeatmap marketType="stocks" maxItems={20} />
-        </MarketHeatmapWidget>
+        <ErrorBoundary widgetName="Market Heatmap">
+          <MarketHeatmapWidget>
+            <MarketHeatmap marketType="stocks" maxItems={20} />
+          </MarketHeatmapWidget>
+        </ErrorBoundary>
 
         {/* Crypto Heatmap Widget */}
-        <CryptoHeatmapWidget>
-          <CryptoHeatmap maxItems={20} />
-        </CryptoHeatmapWidget>
+        <ErrorBoundary widgetName="Crypto Heatmap">
+          <CryptoHeatmapWidget>
+            <CryptoHeatmap maxItems={20} />
+          </CryptoHeatmapWidget>
+        </ErrorBoundary>
 
         {/* Top Movers Widget */}
-        <TopMoversWidget>
-          <TopMovers maxItems={10} />
-        </TopMoversWidget>
+        <ErrorBoundary widgetName="Top Movers">
+          <TopMoversWidget>
+            <TopMovers maxItems={10} />
+          </TopMoversWidget>
+        </ErrorBoundary>
 
         {/* Technical Indicators Widget */}
-        <TechnicalIndicatorsWidget>
-          <TechnicalIndicators />
-        </TechnicalIndicatorsWidget>
+        <ErrorBoundary widgetName="Technical Indicators">
+          <TechnicalIndicatorsWidget>
+            <TechnicalIndicators />
+          </TechnicalIndicatorsWidget>
+        </ErrorBoundary>
 
         {/* Sector Performance Widget */}
-        <SectorPerformanceWidget>
-          <SectorPerformance />
-        </SectorPerformanceWidget>
+        <ErrorBoundary widgetName="Sector Performance">
+          <SectorPerformanceWidget>
+            <SectorPerformance />
+          </SectorPerformanceWidget>
+        </ErrorBoundary>
 
         {/* Market Sentiment Widget */}
-        <MarketSentimentWidget>
-          <MarketSentiment />
-        </MarketSentimentWidget>
+        <ErrorBoundary widgetName="Market Sentiment">
+          <MarketSentimentWidget>
+            <MarketSentiment />
+          </MarketSentimentWidget>
+        </ErrorBoundary>
 
         {/* Social Sentiment Widget */}
-        <SocialSentimentWidget>
-          <SocialSentiment />
-        </SocialSentimentWidget>
+        <ErrorBoundary widgetName="Social Sentiment">
+          <SocialSentimentWidget>
+            <SocialSentiment />
+          </SocialSentimentWidget>
+        </ErrorBoundary>
 
         {/* News Widget */}
-        <NewsWidget>
-          <NewsWidgetComponent maxArticles={10} showImages={false} />
-        </NewsWidget>
+        <ErrorBoundary widgetName="News">
+          <NewsWidget>
+            <NewsWidgetComponent maxArticles={10} showImages={false} />
+          </NewsWidget>
+        </ErrorBoundary>
 
         {/* Economic Calendar Widget */}
-        <EconomicCalendarWidget>
-          <EconomicCalendar maxEvents={10} />
-        </EconomicCalendarWidget>
+        <ErrorBoundary widgetName="Economic Calendar">
+          <EconomicCalendarWidget>
+            <EconomicCalendar maxEvents={10} />
+          </EconomicCalendarWidget>
+        </ErrorBoundary>
       </DashboardLayout>
 
       {/* Debug info for development */}
