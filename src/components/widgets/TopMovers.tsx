@@ -153,13 +153,10 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
     { symbol: 'AAPL', name: 'Apple Inc.', price: 252.40, change: 7.00, changePercent: 2.85, volume: 35000000 },
   ];
 
-  // Load data on mount
+  // Load data on mount - no auto-refresh to reduce load
   useEffect(() => {
     fetchTopMovers();
-
-    // Auto-refresh every 5 minutes (reduced from 60 seconds to reduce load)
-    const interval = setInterval(fetchTopMovers, 300000);
-    return () => clearInterval(interval);
+    // Manual refresh available via refresh button
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maxItems]);
 

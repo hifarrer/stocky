@@ -167,10 +167,9 @@ export function MarketHeatmap({
   useEffect(() => {
     fetchMarketData();
     
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchMarketData, 30000);
-    return () => clearInterval(interval);
-  }, [marketType, maxItems, polygonClient]);
+    // No auto-refresh to reduce client load - use manual refresh button
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marketType, maxItems]);
 
   // Get color based on performance
   const getPerformanceColor = (changePercent: number) => {

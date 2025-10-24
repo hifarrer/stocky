@@ -22,7 +22,6 @@ import { useDashboard, usePlan } from '@/contexts';
 import WelcomeModal from '@/components/WelcomeModal';
 import { useWelcomeModal } from '@/hooks/useWelcomeModal';
 import { PlanIndicator } from '@/components/PlanIndicator';
-import { LazyWidget } from '@/components/LazyWidget';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,99 +55,73 @@ export default function Home() {
         </div>
 
         {/* Price Chart Widget - Takes up 2x2 space on desktop */}
-        <LazyWidget delay={0}>
-          <PriceChartWidget>
-            <PriceChart height={400} showControls={true} />
-          </PriceChartWidget>
-        </LazyWidget>
+        <PriceChartWidget>
+          <PriceChart height={400} showControls={true} />
+        </PriceChartWidget>
 
         {/* Ticker Snapshot Widget */}
-        <LazyWidget delay={200}>
-          <TickerSnapshotWidget>
-            <TickerSnapshot />
-          </TickerSnapshotWidget>
-        </LazyWidget>
+        <TickerSnapshotWidget>
+          <TickerSnapshot />
+        </TickerSnapshotWidget>
 
         {/* Crypto Portfolio Widget - Premium Only */}
         {hasPortfolioAccess && (
-          <LazyWidget delay={400}>
-            <PortfolioWidgetWrapper>
-              <CryptoPortfolioWidget />
-            </PortfolioWidgetWrapper>
-          </LazyWidget>
+          <PortfolioWidgetWrapper>
+            <CryptoPortfolioWidget />
+          </PortfolioWidgetWrapper>
         )}
 
         {/* Stock Portfolio Widget - Premium Only */}
         {hasPortfolioAccess && (
-          <LazyWidget delay={600}>
-            <PortfolioWidgetWrapper>
-              <StockPortfolioWidget />
-            </PortfolioWidgetWrapper>
-          </LazyWidget>
+          <PortfolioWidgetWrapper>
+            <StockPortfolioWidget />
+          </PortfolioWidgetWrapper>
         )}
 
         {/* Market Heatmap Widget */}
-        <LazyWidget delay={800}>
-          <MarketHeatmapWidget>
-            <MarketHeatmap marketType="stocks" maxItems={20} />
-          </MarketHeatmapWidget>
-        </LazyWidget>
+        <MarketHeatmapWidget>
+          <MarketHeatmap marketType="stocks" maxItems={20} />
+        </MarketHeatmapWidget>
 
         {/* Crypto Heatmap Widget */}
-        <LazyWidget delay={1000}>
-          <CryptoHeatmapWidget>
-            <CryptoHeatmap maxItems={20} />
-          </CryptoHeatmapWidget>
-        </LazyWidget>
+        <CryptoHeatmapWidget>
+          <CryptoHeatmap maxItems={20} />
+        </CryptoHeatmapWidget>
 
         {/* Top Movers Widget */}
-        <LazyWidget delay={1200}>
-          <TopMoversWidget>
-            <TopMovers maxItems={10} />
-          </TopMoversWidget>
-        </LazyWidget>
+        <TopMoversWidget>
+          <TopMovers maxItems={10} />
+        </TopMoversWidget>
 
         {/* Technical Indicators Widget */}
-        <LazyWidget delay={1400}>
-          <TechnicalIndicatorsWidget>
-            <TechnicalIndicators />
-          </TechnicalIndicatorsWidget>
-        </LazyWidget>
+        <TechnicalIndicatorsWidget>
+          <TechnicalIndicators />
+        </TechnicalIndicatorsWidget>
 
         {/* Sector Performance Widget */}
-        <LazyWidget delay={1600}>
-          <SectorPerformanceWidget>
-            <SectorPerformance />
-          </SectorPerformanceWidget>
-        </LazyWidget>
+        <SectorPerformanceWidget>
+          <SectorPerformance />
+        </SectorPerformanceWidget>
 
         {/* Market Sentiment Widget */}
-        <LazyWidget delay={1800}>
-          <MarketSentimentWidget>
-            <MarketSentiment />
-          </MarketSentimentWidget>
-        </LazyWidget>
+        <MarketSentimentWidget>
+          <MarketSentiment />
+        </MarketSentimentWidget>
 
         {/* Social Sentiment Widget */}
-        <LazyWidget delay={2000}>
-          <SocialSentimentWidget>
-            <SocialSentiment />
-          </SocialSentimentWidget>
-        </LazyWidget>
+        <SocialSentimentWidget>
+          <SocialSentiment />
+        </SocialSentimentWidget>
 
         {/* News Widget */}
-        <LazyWidget delay={2200}>
-          <NewsWidget>
-            <NewsWidgetComponent maxArticles={10} showImages={false} />
-          </NewsWidget>
-        </LazyWidget>
+        <NewsWidget>
+          <NewsWidgetComponent maxArticles={10} showImages={false} />
+        </NewsWidget>
 
         {/* Economic Calendar Widget */}
-        <LazyWidget delay={2400}>
-          <EconomicCalendarWidget>
-            <EconomicCalendar maxEvents={10} />
-          </EconomicCalendarWidget>
-        </LazyWidget>
+        <EconomicCalendarWidget>
+          <EconomicCalendar maxEvents={10} />
+        </EconomicCalendarWidget>
       </DashboardLayout>
 
       {/* Debug info for development */}

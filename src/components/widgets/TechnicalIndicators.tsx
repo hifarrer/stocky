@@ -185,9 +185,8 @@ export function TechnicalIndicators({ className = '' }: TechnicalIndicatorsProps
   useEffect(() => {
     fetchIndicators();
 
-    // Auto-refresh every 5 minutes
-    const interval = setInterval(fetchIndicators, 300000);
-    return () => clearInterval(interval);
+    // No auto-refresh to reduce client load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedSymbol]);
 
   const getRSISignal = (rsi: number): { label: string; color: string; icon: React.ComponentType<{ className?: string }> } => {

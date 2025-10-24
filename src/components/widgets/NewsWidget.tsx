@@ -73,10 +73,9 @@ export function NewsWidget({
   useEffect(() => {
     fetchNews();
     
-    // Auto-refresh every 5 minutes
-    const interval = setInterval(fetchNews, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [showTickerNews, selectedSymbol, watchlist, maxArticles, polygonClient]);
+    // No auto-refresh to reduce client load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showTickerNews, selectedSymbol, watchlist, maxArticles]);
 
   const getSentimentColor = (sentiment?: string) => {
     switch (sentiment) {

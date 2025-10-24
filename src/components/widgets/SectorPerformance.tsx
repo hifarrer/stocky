@@ -83,9 +83,8 @@ export function SectorPerformance({ className = '' }: SectorPerformanceProps) {
   useEffect(() => {
     fetchSectorPerformance();
 
-    // Auto-refresh every 60 seconds
-    const interval = setInterval(fetchSectorPerformance, 60000);
-    return () => clearInterval(interval);
+    // No auto-refresh to reduce client load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getSortedSectors = () => {

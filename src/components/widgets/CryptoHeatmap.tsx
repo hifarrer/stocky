@@ -137,9 +137,8 @@ export function CryptoHeatmap({
   useEffect(() => {
     fetchCryptoData();
     
-    // Auto-refresh every 60 seconds (CoinGecko has rate limits)
-    const interval = setInterval(fetchCryptoData, 60000);
-    return () => clearInterval(interval);
+    // No auto-refresh to reduce client load - use manual refresh button
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [maxItems]);
 
   // Get color based on performance

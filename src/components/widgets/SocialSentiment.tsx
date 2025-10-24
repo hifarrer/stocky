@@ -263,9 +263,8 @@ export function SocialSentiment({ className = '' }: SocialSentimentProps) {
   useEffect(() => {
     fetchSocialSentiment();
 
-    // Auto-refresh every 2 minutes (social data changes frequently)
-    const interval = setInterval(fetchSocialSentiment, 120000);
-    return () => clearInterval(interval);
+    // No auto-refresh to reduce client load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStockClick = (stock: SocialStock) => {

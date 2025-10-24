@@ -170,9 +170,8 @@ export function MarketSentiment({ className = '' }: MarketSentimentProps) {
   useEffect(() => {
     fetchMarketSentiment();
 
-    // Auto-refresh every 60 seconds
-    const interval = setInterval(fetchMarketSentiment, 60000);
-    return () => clearInterval(interval);
+    // No auto-refresh to reduce client load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const overallStatus = getSentimentStatus(fearGreedIndex);
