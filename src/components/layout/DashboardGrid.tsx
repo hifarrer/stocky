@@ -210,9 +210,9 @@ interface WidgetHideWrapperProps {
   children: React.ReactNode;
 }
 
-function WidgetHideWrapper({ widgetId, onHide, children }: WidgetHideWrapperProps) {
+function WidgetHideWrapper({ onHide, children }: WidgetHideWrapperProps) {
   // Clone the child element and add the onHide prop
-  return React.cloneElement(children as React.ReactElement, { onHide } as any);
+  return React.cloneElement(children as React.ReactElement, { onHide } as Record<string, unknown>);
 }
 
 interface WidgetProps {
@@ -223,7 +223,7 @@ interface WidgetProps {
   onHide?: () => void;
 }
 
-export function Widget({ children, className = '', title, size = 'md', onHide }: WidgetProps) {
+export function Widget({ children, className = '', title, onHide }: WidgetProps) {
   return (
     <div className={`
       relative overflow-hidden rounded-lg border bg-card text-card-foreground shadow-sm

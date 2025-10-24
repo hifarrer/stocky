@@ -18,15 +18,16 @@ import {
   PortfolioWidget as PortfolioWidgetWrapper,
 } from '@/components/layout';
 import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar, CryptoPortfolioWidget, StockPortfolioWidget } from '@/components/widgets';
-import { useDashboard } from '@/contexts';
+import { useDashboard, usePlan } from '@/contexts';
 import WelcomeModal from '@/components/WelcomeModal';
 import { useWelcomeModal } from '@/hooks/useWelcomeModal';
+import { PlanIndicator } from '@/components/PlanIndicator';
 
 export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const dashboard = useDashboard();
   const { showModal, closeModal } = useWelcomeModal();
+  const { hasPortfolioAccess } = usePlan();
 
   // Debug: Log widget rendering
   console.log('Dashboard state:', {
@@ -48,6 +49,11 @@ export default function Home() {
       />
       
       <DashboardLayout>
+        {/* Plan Indicator */}
+        <div className="mb-4 flex justify-end">
+          <PlanIndicator />
+        </div>
+
         {/* Price Chart Widget - Takes up 2x2 space on desktop */}
         <PriceChartWidget>
           <PriceChart height={400} showControls={true} />
@@ -58,15 +64,19 @@ export default function Home() {
           <TickerSnapshot />
         </TickerSnapshotWidget>
 
-        {/* Crypto Portfolio Widget */}
-        <PortfolioWidgetWrapper>
-          <CryptoPortfolioWidget />
-        </PortfolioWidgetWrapper>
+        {/* Crypto Portfolio Widget - Premium Only */}
+        {hasPortfolioAccess && (
+          <PortfolioWidgetWrapper>
+            <CryptoPortfolioWidget />
+          </PortfolioWidgetWrapper>
+        )}
 
-        {/* Stock Portfolio Widget */}
-        <PortfolioWidgetWrapper>
-          <StockPortfolioWidget />
-        </PortfolioWidgetWrapper>
+        {/* Stock Portfolio Widget - Premium Only */}
+        {hasPortfolioAccess && (
+          <PortfolioWidgetWrapper>
+            <StockPortfolioWidget />
+          </PortfolioWidgetWrapper>
+        )}
 
         {/* Market Heatmap Widget */}
         <MarketHeatmapWidget>

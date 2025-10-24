@@ -178,7 +178,7 @@ export function WebSocketProvider({ children, apiKey, autoConnect = false }: Web
         }
       },
 
-      onError: (error) => {
+      onError: () => {
         dispatch({ type: 'SET_CONNECTED', payload: false });
         dispatch({ type: 'SET_ERROR', payload: 'WebSocket error occurred' });
       },

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 
 interface WelcomeModalProps {
@@ -12,7 +11,6 @@ interface WelcomeModalProps {
 
 export default function WelcomeModal({ isOpen, onClose }: WelcomeModalProps) {
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {

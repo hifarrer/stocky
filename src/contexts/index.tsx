@@ -4,7 +4,8 @@ import React, { ReactNode } from 'react';
 import { SymbolProvider, useSymbol } from './SymbolContext';
 import { WebSocketProvider, useWebSocket } from './WebSocketContext';
 import { UserPreferencesProvider, useUserPreferences } from './UserPreferencesContext';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider } from './AuthContext';
+import { PlanProvider } from './PlanContext';
 import { TickerSymbol, MarketType } from '../types';
 
 // Export individual contexts
@@ -12,6 +13,7 @@ export { SymbolProvider, useSymbol } from './SymbolContext';
 export { WebSocketProvider, useWebSocket } from './WebSocketContext';
 export { UserPreferencesProvider, useUserPreferences, useTheme, useWatchlist } from './UserPreferencesContext';
 export { AuthProvider, useAuth } from './AuthContext';
+export { PlanProvider, usePlan } from './PlanContext';
 
 // Combined provider for the entire application
 interface AppProvidersProps {
@@ -29,13 +31,15 @@ export function AppProviders({
 }: AppProvidersProps) {
   return (
     <AuthProvider>
-      <UserPreferencesProvider userId={userId}>
-        <SymbolProvider apiKey={apiKey}>
-          <WebSocketProvider apiKey={apiKey} autoConnect={autoConnectWebSocket}>
-            {children}
-          </WebSocketProvider>
-        </SymbolProvider>
-      </UserPreferencesProvider>
+      <PlanProvider>
+        <UserPreferencesProvider userId={userId}>
+          <SymbolProvider apiKey={apiKey}>
+            <WebSocketProvider apiKey={apiKey} autoConnect={autoConnectWebSocket}>
+              {children}
+            </WebSocketProvider>
+          </SymbolProvider>
+        </UserPreferencesProvider>
+      </PlanProvider>
     </AuthProvider>
   );
 }
@@ -78,7 +82,7 @@ export function useDashboard() {
         // Could add user notification here
       });
     }
-  }, [symbol.selectedSymbol, webSocket.isConnected]);
+  }, [symbol.selectedSymbol, webSocket.isConnected, webSocket]);
 
   // Auto-subscribe to watchlist
   React.useEffect(() => {
@@ -88,7 +92,7 @@ export function useDashboard() {
         // Could add user notification here
       });
     }
-  }, [preferences.watchlist, webSocket.isConnected]);
+  }, [preferences.watchlist, webSocket.isConnected, webSocket]);
 
   return {
     // Current state

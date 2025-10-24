@@ -3,7 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp, TrendingDown, Activity, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { useSymbol } from '@/contexts';
@@ -161,7 +160,7 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
     // Auto-refresh every 60 seconds
     const interval = setInterval(fetchTopMovers, 60000);
     return () => clearInterval(interval);
-  }, [maxItems]);
+  }, [maxItems, fetchTopMovers]);
 
   const handleSymbolClick = (item: MoverData) => {
     selectSymbol({

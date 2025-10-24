@@ -48,6 +48,16 @@ export function Header({ onMenuToggle }: HeaderProps) {
 
         {/* Right Section: Actions */}
         <div className="flex items-center space-x-2">
+          {/* Navigation Links */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Link href="/portfolio" className="text-sm hover:text-primary transition-colors">
+              Portfolio
+            </Link>
+            <Link href="/pricing" className="text-sm hover:text-primary transition-colors">
+              Pricing
+            </Link>
+          </div>
+
           {/* Connection Status */}
           <div className="flex items-center space-x-2">
             <div

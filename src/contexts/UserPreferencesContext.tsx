@@ -167,6 +167,7 @@ export function UserPreferencesProvider({ children, userId }: UserPreferencesPro
 
       return () => clearTimeout(timeoutId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.hasUnsavedChanges, state]);
 
   // Apply theme changes to document

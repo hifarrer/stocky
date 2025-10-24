@@ -4,7 +4,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSymbol, useWebSocket, useWatchlist } from '@/contexts';
 import { createPolygonClient } from '@/lib/polygon';
-import { SnapshotData } from '@/types';
 import { format } from 'date-fns';
 
 interface TickerSnapshotProps {
@@ -110,7 +109,7 @@ export function TickerSnapshot({ className }: TickerSnapshotProps) {
     if (selectedSymbol) {
       fetchSnapshot(displaySymbol.symbol);
     }
-  }, [selectedSymbol, polygonClient]);
+  }, [selectedSymbol, fetchSnapshot]);
 
   // Update with real-time price
   useEffect(() => {
