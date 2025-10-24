@@ -211,18 +211,42 @@ interface WidgetHideWrapperProps {
 }
 
 function WidgetHideWrapper({ onHide, children }: WidgetHideWrapperProps) {
-  // Only inject onHide into widget wrapper components, not ErrorBoundary
+  // Try to inject onHide prop, but don't fail if the component doesn't accept it
   if (React.isValidElement(children)) {
     // Check if this is an ErrorBoundary component
     const isErrorBoundary = typeof children.type === 'function' && 
       children.type.name === 'ErrorBoundary';
     
-    if (!isErrorBoundary) {
-      // @ts-expect-error - Intentionally injecting onHide prop into widget wrappers
-      return React.cloneElement(children, { onHide });
+    if (isErrorBoundary) {
+      // For ErrorBoundary, we need to pass onHide to the widget inside
+      // We'll do this by wrapping the ErrorBoundary with a context provider
+      return (
+        <ErrorBoundaryWithHide onHide={onHide}>
+          {children}
+        </ErrorBoundaryWithHide>
+      );
+    } else {
+      // For regular components, inject onHide directly
+      try {
+        return React.cloneElement(children, { onHide } as Record<string, unknown>);
+      } catch (error) {
+        // If injection fails, return children as-is
+        return <>{children}</>;
+      }
     }
   }
   return <>{children}</>;
+}
+
+// Context to pass onHide through ErrorBoundary
+const HideContext = React.createContext<(() => void) | undefined>(undefined);
+
+function ErrorBoundaryWithHide({ onHide, children }: { onHide: () => void; children: React.ReactNode }) {
+  return (
+    <HideContext.Provider value={onHide}>
+      {children}
+    </HideContext.Provider>
+  );
 }
 
 interface WidgetProps {
@@ -268,8 +292,11 @@ export function Widget({ children, className = '', title, onHide }: WidgetProps)
 
 // Widget wrapper that accepts onHide prop
 function WidgetWithHide({ children, title, onHide }: { children: React.ReactNode; title: string; onHide?: () => void }) {
+  const contextOnHide = React.useContext(HideContext);
+  const finalOnHide = onHide || contextOnHide;
+  
   return (
-    <Widget title={title} onHide={onHide}>
+    <Widget title={title} onHide={finalOnHide}>
       {children}
     </Widget>
   );
