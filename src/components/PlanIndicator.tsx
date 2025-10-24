@@ -38,13 +38,7 @@ export function PlanIndicator() {
         )}
       </div>
       
-      {!isPremium && (
-        <Link href="/pricing">
-          <Button size="sm" variant="outline" className="h-6 text-xs">
-            Upgrade
-          </Button>
-        </Link>
-      )}
+      {/* Demo mode - no upgrade prompts */}
     </div>
   );
 }

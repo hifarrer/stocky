@@ -22,7 +22,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { useSymbol } from '@/contexts/SymbolContext';
 import { usePlan } from '@/contexts/PlanContext';
-import { UpgradePrompt } from '@/components/UpgradePrompt';
+// UpgradePrompt removed for demo mode
 import { PortfolioChart } from '@/components/widgets/PortfolioChart';
 import { SimpleHeader } from '@/components/layout/SimpleHeader';
 
@@ -737,30 +737,6 @@ export default function PortfolioPage() {
     );
   }
 
-  if (!hasPortfolioAccess) {
-    return (
-      <div className="min-h-screen bg-background text-foreground">
-        <SimpleHeader 
-          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        />
-        <div className="container mx-auto px-4 py-8">
-          <div className="max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold mb-4">Portfolio Management</h1>
-              <p className="text-muted-foreground text-lg">
-                Track your investments with real-time portfolio management
-              </p>
-            </div>
-            <UpgradePrompt 
-              title="Portfolio Tracking"
-              description="Track your stock and cryptocurrency investments with real-time updates and performance analytics."
-              feature="Available with Premium subscription"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">

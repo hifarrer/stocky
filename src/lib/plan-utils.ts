@@ -2,15 +2,14 @@ import { usePlan } from '@/contexts/PlanContext';
 
 /**
  * Utility function to add delay for free users
- * Premium users get real-time data, free users get 5-minute delayed data
+ * Demo mode - all users get real-time data
  */
 export function addDataDelay<T>(data: T, isPremium: boolean): T {
   if (isPremium) {
     return data;
   }
   
-  // For free users, we simulate 5-minute delay by modifying timestamps
-  // In a real implementation, you would fetch delayed data from your API
+  // Demo mode - no delays for any users
   return data;
 }
 
@@ -23,17 +22,14 @@ export function usePlanConfig() {
   return {
     isPremium,
     hasRealTimeData,
-    dataDelay: isPremium ? 0 : 5 * 60 * 1000, // 5 minutes in milliseconds
-    shouldUseRealTime: hasRealTimeData,
+    dataDelay: 0, // Demo mode - no delays for any users
+    shouldUseRealTime: true, // Demo mode - real-time for all users
   };
 }
 
 /**
- * Format data delay message for free users
+ * Format data delay message for users
  */
 export function getDataDelayMessage(isPremium: boolean): string {
-  if (isPremium) {
-    return 'Real-time data';
-  }
-  return 'Data delayed by 5 minutes';
+  return 'Real-time data'; // Demo mode - all users get real-time data
 }

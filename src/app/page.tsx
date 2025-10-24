@@ -28,7 +28,7 @@ export default function Home() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dashboard = useDashboard();
   const { showModal, closeModal } = useWelcomeModal();
-  const { hasPortfolioAccess } = usePlan();
+  // Demo mode - all features available
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -56,23 +56,19 @@ export default function Home() {
           </TickerSnapshotWidget>
         </ErrorBoundary>
 
-        {/* Crypto Portfolio Widget - Premium Only */}
-        {hasPortfolioAccess && (
-          <ErrorBoundary widgetName="Crypto Portfolio">
-            <PortfolioWidgetWrapper>
-              <CryptoPortfolioWidget />
-            </PortfolioWidgetWrapper>
-          </ErrorBoundary>
-        )}
+        {/* Crypto Portfolio Widget */}
+        <ErrorBoundary widgetName="Crypto Portfolio">
+          <PortfolioWidgetWrapper>
+            <CryptoPortfolioWidget />
+          </PortfolioWidgetWrapper>
+        </ErrorBoundary>
 
-        {/* Stock Portfolio Widget - Premium Only */}
-        {hasPortfolioAccess && (
-          <ErrorBoundary widgetName="Stock Portfolio">
-            <PortfolioWidgetWrapper>
-              <StockPortfolioWidget />
-            </PortfolioWidgetWrapper>
-          </ErrorBoundary>
-        )}
+        {/* Stock Portfolio Widget */}
+        <ErrorBoundary widgetName="Stock Portfolio">
+          <PortfolioWidgetWrapper>
+            <StockPortfolioWidget />
+          </PortfolioWidgetWrapper>
+        </ErrorBoundary>
 
         {/* Market Heatmap Widget */}
         <ErrorBoundary widgetName="Market Heatmap">

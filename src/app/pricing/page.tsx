@@ -40,17 +40,17 @@ const features = [
   },
   {
     name: 'Crypto Portfolio Tracking',
-    free: false,
+    free: true,
     premium: true,
   },
   {
     name: 'Stock Portfolio Tracking',
-    free: false,
+    free: true,
     premium: true,
   },
   {
     name: 'Data Delay',
-    free: '5 minutes',
+    free: 'Real-time',
     premium: 'Real-time',
   },
   {
@@ -65,7 +65,7 @@ const features = [
   },
   {
     name: 'Advanced Analytics',
-    free: false,
+    free: true,
     premium: true,
   },
 ];
@@ -220,8 +220,8 @@ export default function PricingPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">What&apos;s the difference between Free and Premium?</h3>
               <p className="text-muted-foreground">
-                Free users get access to most widgets but with 5-minute delayed data and no portfolio tracking. 
-                Premium users get real-time data, portfolio tracking, and priority support.
+                During our demo phase, all users get access to all features including real-time data and portfolio tracking. 
+                Premium users get priority support and additional benefits.
               </p>
             </div>
             <div>
@@ -234,8 +234,8 @@ export default function PricingPage() {
             <div>
               <h3 className="text-lg font-semibold mb-2">What happens to my data if I downgrade?</h3>
               <p className="text-muted-foreground">
-                Your portfolio data will be preserved but hidden until you upgrade again. 
-                All other features remain accessible with the Free plan limitations.
+                During our demo phase, all features remain accessible to all users. 
+                Your data will be preserved regardless of plan changes.
               </p>
             </div>
           </div>

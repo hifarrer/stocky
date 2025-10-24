@@ -47,8 +47,8 @@ export function PlanProvider({ children }: PlanProviderProps) {
 
   const isPremium = plan === 'premium';
   const isFree = plan === 'free';
-  const hasPortfolioAccess = isPremium;
-  const hasRealTimeData = isPremium;
+  const hasPortfolioAccess = true; // Demo mode - allow all users access
+  const hasRealTimeData = true; // Demo mode - allow real-time data for all users
   const hasPrioritySupport = isPremium;
 
   const value: PlanContextType = {

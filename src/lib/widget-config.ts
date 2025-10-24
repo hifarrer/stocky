@@ -46,11 +46,7 @@ export function getRefreshInterval(
 ): number {
   const baseInterval = WidgetRefreshIntervals[widgetType];
   
-  // Free users get 5 minute delay minimum
-  if (!isPremium) {
-    return Math.max(baseInterval, 300000);
-  }
-  
+  // Demo mode - all users get optimal refresh rates
   return baseInterval;
 }
 
