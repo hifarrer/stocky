@@ -157,10 +157,11 @@ export function TopMovers({ className = '', maxItems = 10 }: TopMoversProps) {
   useEffect(() => {
     fetchTopMovers();
 
-    // Auto-refresh every 60 seconds
-    const interval = setInterval(fetchTopMovers, 60000);
+    // Auto-refresh every 5 minutes (reduced from 60 seconds to reduce load)
+    const interval = setInterval(fetchTopMovers, 300000);
     return () => clearInterval(interval);
-  }, [maxItems, fetchTopMovers]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxItems]);
 
   const handleSymbolClick = (item: MoverData) => {
     selectSymbol({
