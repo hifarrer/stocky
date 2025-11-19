@@ -17,7 +17,7 @@ import {
   EconomicCalendarWidget,
   PortfolioWidget as PortfolioWidgetWrapper,
 } from '@/components/layout';
-import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar, CryptoPortfolioWidget, StockPortfolioWidget } from '@/components/widgets';
+import { PriceChart, TickerSnapshot, MarketHeatmap, CryptoHeatmap, TopMovers, TechnicalIndicators, SectorPerformance, MarketSentiment, SocialSentiment, NewsWidget as NewsWidgetComponent, EconomicCalendar, CryptoPortfolioWidget, StockPortfolioWidget, TradingViewTicker } from '@/components/widgets';
 import { useDashboard, usePlan } from '@/contexts';
 import WelcomeModal from '@/components/WelcomeModal';
 import { useWelcomeModal } from '@/hooks/useWelcomeModal';
@@ -35,6 +35,11 @@ export default function Home() {
       <Header 
         onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
       />
+      
+      {/* TradingView Ticker Tape */}
+      <div className="w-full border-b bg-background">
+        <TradingViewTicker />
+      </div>
       
       {/* Plan Indicator */}
       <div className="mb-4 flex justify-end">

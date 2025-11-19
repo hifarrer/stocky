@@ -152,3 +152,37 @@ body {
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out;
 }
+
+/* TradingView Widget Isolation - Prevent style conflicts */
+.tradingview-ticker-wrapper {
+  isolation: isolate;
+  contain: layout style paint;
+  position: relative;
+  z-index: 1;
+}
+
+/* Scope TradingView styles to prevent global pollution */
+.tradingview-ticker-wrapper .tradingview-widget-container {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+}
+
+/* Reset any global styles that TradingView might inject */
+.tradingview-ticker-wrapper * {
+  box-sizing: border-box;
+}
+
+/* Protect critical global styles from TradingView overrides */
+/* Only apply !important where TradingView is known to interfere */
+body:not(.tradingview-widget-container *) {
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Ensure TradingView widget is properly contained */
+.tradingview-ticker-wrapper iframe,
+.tradingview-ticker-wrapper embed,
+.tradingview-ticker-wrapper object {
+  max-width: 100%;
+  display: block;
+}

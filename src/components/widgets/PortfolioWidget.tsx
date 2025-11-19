@@ -92,6 +92,11 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
   }, [token]);
 
   const createDefaultPortfolio = useCallback(async () => {
+    if (!token || !user) {
+      console.log('CryptoPortfolioWidget: No token or user, skipping default portfolio creation');
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetch('/api/portfolio/create-crypto-default', {
@@ -100,6 +105,14 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
           'Authorization': `Bearer ${token}`,
         },
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to create default crypto portfolio:', errorData.error || 'Unknown error');
+        setError(errorData.error || 'Failed to create default crypto portfolio');
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -115,7 +128,7 @@ export function CryptoPortfolioWidget({ className }: PortfolioWidgetProps) {
     } finally {
       setLoading(false);
     }
-  }, [token, loadPortfolios]);
+  }, [token, user, loadPortfolios]);
 
   // Load portfolios on mount
   useEffect(() => {

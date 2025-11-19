@@ -93,6 +93,11 @@ export function StockPortfolioWidget({ className }: StockPortfolioWidgetProps) {
   }, [token]);
 
   const createDefaultPortfolio = useCallback(async () => {
+    if (!token || !user) {
+      console.log('StockPortfolioWidget: No token or user, skipping default portfolio creation');
+      return;
+    }
+
     try {
       setLoading(true);
       const response = await fetch('/api/portfolio/create-stock-default', {
@@ -101,6 +106,14 @@ export function StockPortfolioWidget({ className }: StockPortfolioWidgetProps) {
           'Authorization': `Bearer ${token}`,
         },
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to create default stock portfolio:', errorData.error || 'Unknown error');
+        setError(errorData.error || 'Failed to create default stock portfolio');
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {
@@ -116,7 +129,7 @@ export function StockPortfolioWidget({ className }: StockPortfolioWidgetProps) {
     } finally {
       setLoading(false);
     }
-  }, [token, loadPortfolios]);
+  }, [token, user, loadPortfolios]);
 
   // Load portfolios on mount
   useEffect(() => {

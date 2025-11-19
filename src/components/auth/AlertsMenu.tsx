@@ -38,7 +38,10 @@ export function AlertsMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   const loadAlerts = useCallback(async () => {
-    if (!token || !user) return;
+    if (!token || !user) {
+      console.log('AlertsMenu: No token or user, skipping load');
+      return;
+    }
 
     try {
       setLoading(true);
@@ -47,6 +50,18 @@ export function AlertsMenu() {
           'Authorization': `Bearer ${token}`,
         },
       });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('Failed to load alerts:', errorData.error || 'Unknown error');
+        // If token is invalid, clear it and logout
+        if (response.status === 401) {
+          console.log('Token invalid, clearing auth state');
+          // Don't call logout here as it might cause redirect loops
+        }
+        return;
+      }
+      
       const data = await response.json();
       
       if (data.success) {

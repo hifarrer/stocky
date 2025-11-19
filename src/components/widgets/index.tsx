@@ -11,3 +11,4 @@ export { MarketSentiment } from './MarketSentiment';
 export { SocialSentiment } from './SocialSentiment';
 export { CryptoPortfolioWidget } from './PortfolioWidget';
 export { StockPortfolioWidget } from './StockPortfolioWidget';
+export { TradingViewTicker } from './TradingViewTicker';

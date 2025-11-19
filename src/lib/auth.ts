@@ -59,14 +59,29 @@ export async function createToken(payload: JWTPayload): Promise<string> {
  * Verify and decode a JWT token
  */
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
+  if (!token || typeof token !== 'string' || token.trim().length === 0) {
+    console.error('Token verification failed: Token is empty or invalid');
+    return null;
+  }
+
+  if (!JWT_SECRET || JWT_SECRET.length === 0) {
+    console.error('Token verification failed: JWT_SECRET is not configured');
+    return null;
+  }
+
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
     if (payload && typeof payload === 'object' && 'userId' in payload && 'email' in payload) {
       return payload as JWTPayload;
     }
+    console.error('Token verification failed: Invalid payload structure');
     return null;
   } catch (error) {
-    console.error('Token verification failed:', error);
+    if (error instanceof Error) {
+      console.error('Token verification failed:', error.message);
+    } else {
+      console.error('Token verification failed: Unknown error', error);
+    }
     return null;
   }
 }
