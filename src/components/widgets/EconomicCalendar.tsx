@@ -143,11 +143,37 @@ const generateMockEvents = (): EconomicEvent[] => {
 export function EconomicCalendar({ maxEvents = 10, className }: EconomicCalendarProps) {
   const [events, setEvents] = useState<EconomicEvent[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // In a real app, this would fetch from an API
-    const mockEvents = generateMockEvents();
-    setEvents(mockEvents.slice(0, maxEvents));
+    setIsLoading(true);
+    try {
+      const mockEvents = generateMockEvents();
+      // Filter to show events from today onwards
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      
+      const upcomingEvents = mockEvents
+        .filter(event => {
+          const eventDate = new Date(event.date);
+          eventDate.setHours(0, 0, 0, 0);
+          return eventDate >= today;
+        })
+        .slice(0, maxEvents);
+      
+      // Always show events even if some are in the past today (for demo purposes)
+      const eventsToShow = upcomingEvents.length > 0 
+        ? upcomingEvents 
+        : mockEvents.slice(0, maxEvents);
+      
+      setEvents(eventsToShow);
+    } catch (error) {
+      console.error('Error generating economic calendar events:', error);
+      setEvents([]);
+    } finally {
+      setIsLoading(false);
+    }
   }, [maxEvents]);
 
   const getImpactColor = (impact: string) => {
@@ -210,6 +236,17 @@ export function EconomicCalendar({ maxEvents = 10, className }: EconomicCalendar
   };
 
   const groupedEvents = groupEventsByDate(events);
+
+  if (isLoading) {
+    return (
+      <div className={cn("h-full flex items-center justify-center", className)}>
+        <div className="flex items-center gap-2">
+          <div className="w-4 h-4 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+          <span className="text-sm text-muted-foreground">Loading calendar...</span>
+        </div>
+      </div>
+    );
+  }
 
   if (events.length === 0) {
     return (

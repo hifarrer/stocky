@@ -1,11 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExternalLink, Clock, TrendingUp, RefreshCw, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useSymbol, useWatchlist } from '@/contexts';
-import { createPolygonClient } from '@/lib/polygon';
 import { NewsArticle } from '@/types';
 import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -30,35 +29,27 @@ export function NewsWidget({
   const { selectedSymbol } = useSymbol();
   const { watchlist } = useWatchlist();
 
-  // Create Polygon client
-  const polygonClient = useMemo(() => {
-    const apiKey = process.env.NEXT_PUBLIC_POLYGON_API_KEY || 'demo';
-    return createPolygonClient(apiKey);
-  }, []);
-
   // Fetch news based on current mode
   const fetchNews = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      let articles: NewsArticle[];
-
+      let url = `/api/news?limit=${maxArticles}`;
+      
       if (showTickerNews && selectedSymbol) {
         // Get news for selected symbol
-        articles = await polygonClient.news.getTickerNews(
-          selectedSymbol.symbol, 
-          maxArticles, 
-          7
-        );
-      } else if (watchlist.length > 0) {
-        // Get mixed news feed with watchlist
-        articles = await polygonClient.news.getNewsFeed(watchlist, maxArticles);
-      } else {
-        // Get general market news
-        articles = await polygonClient.news.getLatestNews(maxArticles);
+        url += `&ticker=${encodeURIComponent(selectedSymbol.symbol)}&days=7`;
       }
 
+      const response = await fetch(url);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to fetch news');
+      }
+
+      const articles: NewsArticle[] = data.data || [];
       setNews(articles);
       setLastUpdated(new Date());
     } catch (err) {
