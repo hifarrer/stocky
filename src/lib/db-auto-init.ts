@@ -8,18 +8,38 @@ export async function initializeDatabaseDirectly(): Promise<void> {
     return;
   }
 
-  const isProduction = process.env.NODE_ENV === 'production' || 
-                      connectionString.includes('render.com') || 
-                      connectionString.includes('vercel.com');
+  // Check if we're in a serverless environment
+  const isServerless = process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME || process.env.VERCEL_ENV;
+  
+  // Determine if we need SSL (for hosted databases)
+  const needsSSL = 
+    process.env.NODE_ENV === 'production' || 
+    connectionString.includes('render.com') ||
+    connectionString.includes('heroku.com') ||
+    connectionString.includes('amazonaws.com') ||
+    connectionString.includes('supabase.co') ||
+    connectionString.includes('neon.tech') ||
+    connectionString.includes('vercel.com') ||
+    isServerless;
 
   console.log('🔧 Direct database initialization...');
 
-  const pool = new Pool({
-    connectionString,
+  // For serverless, use smaller pool size
+  const poolConfig = isServerless ? {
+    max: 1,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 5000,
+    allowExitOnIdle: true,
+  } : {
     max: 5,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 10000,
-    ssl: isProduction ? { rejectUnauthorized: false } : false,
+  };
+
+  const pool = new Pool({
+    connectionString,
+    ...poolConfig,
+    ssl: needsSSL ? { rejectUnauthorized: false } : false,
   });
 
   try {
