@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { SignJWT, jwtVerify, JWTExpired } from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 import { query, queryOne } from './db';
 
 const SALT_ROUNDS = 10;
@@ -81,17 +81,21 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
     return null;
   } catch (error) {
     // Handle expired tokens specifically
-    if (error instanceof JWTExpired) {
-      console.error('Token verification failed: Token has expired');
-      return null;
-    }
-    
-    // Handle other JWT errors
+    // jose library throws errors with code 'ERR_JWT_EXPIRED' for expired tokens
     if (error instanceof Error) {
-      // Only log non-expired errors to reduce noise
-      if (!error.message.includes('exp')) {
-        console.error('Token verification failed:', error.message);
+      const errorMessage = error.message.toLowerCase();
+      const isExpired = errorMessage.includes('exp') || 
+                       errorMessage.includes('expired') ||
+                       errorMessage.includes('jwt expired') ||
+                       (error as { code?: string }).code === 'ERR_JWT_EXPIRED';
+      
+      if (isExpired) {
+        // Don't log expired tokens to reduce noise - this is expected behavior
+        return null;
       }
+      
+      // Log other errors
+      console.error('Token verification failed:', error.message);
     } else {
       console.error('Token verification failed: Unknown error', error);
     }
