@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import { SignJWT, jwtVerify } from 'jose';
+import { SignJWT, jwtVerify, JWTExpired } from 'jose';
 import { query, queryOne } from './db';
 
 const SALT_ROUNDS = 10;
@@ -7,6 +7,7 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-change-in-production'
 );
 const JWT_EXPIRY = '7d'; // Token expires in 7 days
+const CLOCK_TOLERANCE = 30; // Allow 30 seconds of clock skew
 
 export interface User {
   id: string;
@@ -70,15 +71,27 @@ export async function verifyToken(token: string): Promise<JWTPayload | null> {
   }
 
   try {
-    const { payload } = await jwtVerify(token, JWT_SECRET);
+    const { payload } = await jwtVerify(token, JWT_SECRET, {
+      clockTolerance: CLOCK_TOLERANCE, // Allow 30 seconds of clock skew
+    });
     if (payload && typeof payload === 'object' && 'userId' in payload && 'email' in payload) {
       return payload as JWTPayload;
     }
     console.error('Token verification failed: Invalid payload structure');
     return null;
   } catch (error) {
+    // Handle expired tokens specifically
+    if (error instanceof JWTExpired) {
+      console.error('Token verification failed: Token has expired');
+      return null;
+    }
+    
+    // Handle other JWT errors
     if (error instanceof Error) {
-      console.error('Token verification failed:', error.message);
+      // Only log non-expired errors to reduce noise
+      if (!error.message.includes('exp')) {
+        console.error('Token verification failed:', error.message);
+      }
     } else {
       console.error('Token verification failed: Unknown error', error);
     }

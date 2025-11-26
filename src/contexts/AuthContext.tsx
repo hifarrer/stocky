@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface User {
@@ -88,13 +88,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(data.user);
   };
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('auth_token');
     localStorage.removeItem('user');
     setToken(null);
     setUser(null);
     router.push('/auth');
-  };
+  }, [router]);
 
   const refreshUser = async () => {
     if (!token) return;
@@ -118,6 +118,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout();
     }
   };
+
+  // Listen for token expiration events
+  useEffect(() => {
+    const handleTokenExpired = () => {
+      console.log('Token expired, logging out...');
+      logout();
+    };
+
+    window.addEventListener('auth:token-expired', handleTokenExpired);
+    
+    return () => {
+      window.removeEventListener('auth:token-expired', handleTokenExpired);
+    };
+  }, [logout]);
 
   const value: AuthContextType = {
     user,
